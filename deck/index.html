@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KOPILOT — Pitch Deck | Ecodigitus × Hack the Cooperatives 2026</title>
+<style>
+  :root{
+    --merah:#D32030; --merah-d:#A41320; --putih:#ffffff;
+    --ink:#15171c; --muted:#5b6472; --line:#e7e9ee;
+    --bg:#f6f7f9; --card:#ffffff; --gold:#E0A526; --green:#1f9d57;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    background:#0d0f13;color:var(--ink);-webkit-font-smoothing:antialiased;overflow:hidden}
+  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+    padding:6vh 8vw;background:var(--bg);animation:fade .45s ease}
+  .slide.active{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .slide.dark{background:linear-gradient(135deg,#101319,#1c2230);color:#fff}
+  .slide.red{background:linear-gradient(135deg,var(--merah),var(--merah-d));color:#fff}
+  .kicker{font-size:1.1vw;letter-spacing:.22em;text-transform:uppercase;font-weight:700;
+    color:var(--merah);margin-bottom:1.6vh}
+  .slide.dark .kicker,.slide.red .kicker{color:#ffd7da}
+  h1{font-size:5.4vw;line-height:1.02;font-weight:800;letter-spacing:-.02em}
+  h2{font-size:3.4vw;line-height:1.08;font-weight:800;letter-spacing:-.01em;margin-bottom:2.4vh}
+  h3{font-size:1.7vw;font-weight:700}
+  p,li{font-size:1.5vw;line-height:1.5;color:var(--muted)}
+  .slide.dark p,.slide.dark li,.slide.red p,.slide.red li{color:#cfd6e2}
+  .slide.red p,.slide.red li{color:#ffe9eb}
+  .lead{font-size:1.9vw;color:var(--ink)}
+  .slide.dark .lead,.slide.red .lead{color:#fff}
+  strong{color:var(--ink)} .slide.dark strong,.slide.red strong{color:#fff}
+  .big{font-size:8vw;font-weight:800;line-height:1;letter-spacing:-.03em}
+  .row{display:flex;gap:3vw;flex-wrap:wrap;margin-top:3vh}
+  .col{flex:1;min-width:220px}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6vw;margin-top:3vh}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:2.4vh 1.8vw;
+    box-shadow:0 6px 24px rgba(20,23,28,.05)}
+  .slide.dark .card{background:#222a39;border-color:#333d52}
+  .card .n{font-size:2.6vw;font-weight:800;color:var(--merah)}
+  .card h3{margin:.6vh 0 .8vh}
+  .stat{display:flex;gap:2.4vw;flex-wrap:wrap;margin-top:3vh}
+  .stat .item{flex:1;min-width:180px}
+  .stat .v{font-size:4.6vw;font-weight:800;letter-spacing:-.02em;line-height:1}
+  .stat .v.red{color:var(--merah)} .stat .v.gold{color:var(--gold)} .stat .v.green{color:var(--green)}
+  .stat .l{font-size:1.2vw;color:var(--muted);margin-top:.8vh}
+  .slide.dark .stat .l{color:#9aa6ba}
+  ul{list-style:none} li{position:relative;padding-left:1.7vw;margin:1.4vh 0}
+  li::before{content:"";position:absolute;left:0;top:.7vh;width:.7vw;height:.7vw;border-radius:50%;
+    background:var(--merah)}
+  table{width:100%;border-collapse:collapse;margin-top:3vh;font-size:1.25vw}
+  th,td{text-align:left;padding:1.4vh 1.2vw;border-bottom:1px solid var(--line)}
+  th{font-size:1vw;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  tr.win{background:#fff5f5} tr.win td{font-weight:700;color:var(--ink)}
+  .tag{display:inline-block;background:var(--merah);color:#fff;font-size:1vw;font-weight:700;
+    padding:.5vh 1vw;border-radius:999px}
+  .tag.green{background:var(--green)} .tag.muted{background:#8a93a3}
+  .flow{display:flex;align-items:center;gap:1.2vw;flex-wrap:wrap;margin-top:3vh}
+  .flow .step{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:2vh 1.4vw;
+    flex:1;min-width:160px;text-align:center}
+  .slide.dark .flow .step{background:#222a39;border-color:#333d52}
+  .flow .arr{color:var(--merah);font-size:2.2vw;font-weight:800}
+  .flow .ico{font-size:2.6vw;margin-bottom:1vh}
+  .brand{display:flex;align-items:center;gap:1vw;margin-bottom:3vh}
+  .logo{width:3.4vw;height:3.4vw;border-radius:10px;background:#fff;display:flex;overflow:hidden;
+    border:1px solid rgba(255,255,255,.25)}
+  .logo .r{flex:1;background:var(--merah)} .logo .w{flex:1;background:#fff}
+  .pill{display:inline-block;border:1.5px solid currentColor;border-radius:999px;padding:.6vh 1.4vw;
+    font-size:1.1vw;font-weight:700;opacity:.9}
+  .footer{position:fixed;bottom:2.2vh;left:8vw;right:8vw;display:flex;justify-content:space-between;
+    align-items:center;font-size:.95vw;color:#7a8395;z-index:5}
+  .slide.dark ~ .footer,.slide.red ~ .footer{color:#fff}
+  .nav{position:fixed;bottom:2vh;right:2vw;display:flex;gap:.6vw;z-index:10}
+  .nav button{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);
+    width:42px;height:42px;border-radius:10px;font-size:18px;cursor:pointer;backdrop-filter:blur(6px)}
+  .nav button:hover{background:var(--merah);border-color:var(--merah)}
+  .prog{position:fixed;top:0;left:0;height:4px;background:var(--merah);z-index:20;transition:width .3s}
+  .pageno{position:fixed;bottom:2.2vh;left:2vw;font-size:.95vw;color:#7a8395;z-index:10}
+  .note{font-size:1vw;color:var(--muted);margin-top:2vh;font-style:italic}
+  .disc{font-size:.9vw;color:#9aa6ba;margin-top:2vh}
+  @media(max-width:820px){
+    h1{font-size:9vw}h2{font-size:6vw}.big{font-size:16vw}p,li,.lead{font-size:3.4vw}
+    .kicker{font-size:2.6vw}.cards{grid-template-columns:1fr}.card .n{font-size:7vw}
+    .stat .v{font-size:11vw}.stat .l{font-size:3vw}table{font-size:2.8vw}th{font-size:2.4vw}
+    .flow{flex-direction:column}.flow .arr{transform:rotate(90deg)}.logo{width:11vw;height:11vw}
+    .footer,.pageno{font-size:2.4vw}.note,.disc{font-size:2.6vw}
+  }
+</style>
+</head>
+<body>
+<div class="prog" id="prog"></div>
+<div class="stage" id="stage">
+
+  <!-- 1 TITLE -->
+  <section class="slide active red">
+    <div class="brand">
+      <div class="logo"><div class="r"></div><div class="w"></div></div>
+      <span style="font-weight:700;font-size:1.3vw">Ecodigitus</span>
+    </div>
+    <div class="kicker">Hack the Cooperatives · SimkopDes · 10–11 Juli 2026</div>
+    <h1>KOPILOT</h1>
+    <p class="lead" style="margin-top:2.4vh;max-width:60vw">AI Co-pilot Kesehatan &amp; Kepercayaan Koperasi Desa Merah Putih.<br>
+    Dari <strong>foto nota &amp; pesan suara</strong> → <strong>laporan keuangan</strong> → <strong>skor kepercayaan</strong> yang transparan.</p>
+    <div style="margin-top:4vh"><span class="pill">Tim Ecodigitus</span></div>
+  </section>
+
+  <!-- 2 MASALAH -->
+  <section class="slide">
+    <div class="kicker">Masalah</div>
+    <h2>80 ribu koperasi dibentuk.<br>Hanya seribu yang hidup.</h2>
+    <div class="stat">
+      <div class="item"><div class="v red">80.015</div><div class="l">koperasi <b>terbentuk</b> (Jun 2025)</div></div>
+      <div class="item"><div class="v gold">±1.061</div><div class="l">yang <b>benar-benar beroperasi</b> (Jun 2026)</div></div>
+      <div class="item"><div class="v">80k→40k</div><div class="l">target operasional 2026 <b>dipangkas 50%</b></div></div>
+    </div>
+    <p class="note">Sumber: Kemenkop via Bisnis.com, 12 Jun 2026. Gerai nyata "sepi pembeli / stok kosong, mulai berguguran" (Kompas Regional).</p>
+  </section>
+
+  <!-- 3 AKAR MASALAH -->
+  <section class="slide dark">
+    <div class="kicker">Akar Masalah</div>
+    <h2>Pengurus desa tidak bisa membukukan.</h2>
+    <p class="lead" style="max-width:64vw">Tanpa pencatatan → <strong>tak ada laporan keuangan</strong> → <strong>tak bisa RAT</strong> → <strong>tak bisa dimonitor</strong> → <strong>tak bisa diberi / melunasi kredit Rp3 M.</strong> Semua masalah hilir lahir dari satu titik buntu di hulu.</p>
+    <div class="stat">
+      <div class="item"><div class="v red">10,7%</div><div class="l">pelatihan pengurus baru tuntas (Nov 2025) — INDEF: kapasitas SDM = masalah #1</div></div>
+      <div class="item"><div class="v gold">65%</div><div class="l">perangkat desa melihat potensi korupsi (survei CELIOS)</div></div>
+      <div class="item"><div class="v">Rp85,96 T</div><div class="l">proyeksi risiko gagal bayar 6 tahun (CELIOS)</div></div>
+    </div>
+  </section>
+
+  <!-- 4 SOLUSI -->
+  <section class="slide red">
+    <div class="kicker">Solusi</div>
+    <h2>Perbaiki tangkap-data di hulu dengan AI.</h2>
+    <p class="lead" style="max-width:66vw">KOPILOT adalah <strong>agen AI di WhatsApp</strong>. Pengurus berliterasi rendah cukup kirim <strong>foto nota</strong> atau <strong>pesan suara Bahasa daerah</strong>. AI mencatat jurnal, menyusun <strong>laporan SAK EMKM siap-RAT</strong>, dan dari data yang sama menghitung <strong>"Skor Sehat Koperasi"</strong> yang transparan.</p>
+    <div style="margin-top:3vh"><span class="pill">Nol kurva belajar — antarmukanya WhatsApp</span></div>
+  </section>
+
+  <!-- 5 CARA KERJA -->
+  <section class="slide">
+    <div class="kicker">Cara Kerja</div>
+    <h2>Tiga langkah, satu pesan WhatsApp.</h2>
+    <div class="flow">
+      <div class="step"><div class="ico">📸🎙️</div><h3>1. Kirim</h3><p>Foto nota / suara<br>"jual beras 5 karung"</p></div>
+      <div class="arr">→</div>
+      <div class="step"><div class="ico">🤖</div><h3>2. AI proses</h3><p>Vision + suara → jurnal double-entry otomatis</p></div>
+      <div class="arr">→</div>
+      <div class="step"><div class="ico">📊</div><h3>3. Hasil</h3><p>Laporan SAK EMKM + Skor Sehat seketika</p></div>
+    </div>
+    <p class="note">Vision-LLM (tanpa OCR engine terpisah) · ASR Bahasa Indonesia/daerah · agen Claude untuk klasifikasi akun &amp; deteksi anomali.</p>
+  </section>
+
+  <!-- 6 SKOR SEHAT -->
+  <section class="slide dark">
+    <div class="kicker">Fitur Killer — Skor Sehat Koperasi</div>
+    <h2>Satu skor. Tiga mata yang melihat.</h2>
+    <div class="cards">
+      <div class="card"><div class="n">🛡️</div><h3>Anti-Fraud</h3><p>Benford's Law + rules: deteksi mark-up modal awal, angka bulat janggal, koperasi fiktif (dedup NIK).</p></div>
+      <div class="card"><div class="n">⚠️</div><h3>Peringatan Dini</h3><p>Sinyal gagal bayar &amp; likuiditas sebelum macet — lindungi eksposur Rp85,96 T.</p></div>
+      <div class="card"><div class="n">✅</div><h3>Kesiapan Kredit</h3><p>"Layak Rp450 jt, bukan Rp3 M" — keputusan Himbara berbasis data nyata.</p></div>
+    </div>
+    <p class="note">Transparan untuk <b>Anggota</b> (ledger terbuka) · <b>Bank Himbara</b> (alasan skor) · <b>Pemerintah</b> (peta risiko 80k koperasi).</p>
+  </section>
+
+  <!-- 7 BLUE OCEAN -->
+  <section class="slide">
+    <div class="kicker">Posisi Pasar</div>
+    <h2>Incumbent main di operasi. Kami main di kecerdasan.</h2>
+    <table>
+      <tr><th>Ruang</th><th>Pemain</th><th>Status</th></tr>
+      <tr><td>POS / akuntansi / dashboard KDMP</td><td>Telkom Digi Koperasi, KDMP.ID, SmartKoperasi/BRI</td><td><span class="tag muted">Sangat ramai</span></td></tr>
+      <tr><td>Software simpan-pinjam</td><td>Koperasiku, USSI, Koperasiweb</td><td><span class="tag muted">Non-AI</span></td></tr>
+      <tr><td>Credit scoring P2P</td><td>Amartha, Kredivo</td><td><span class="tag muted">Captive sendiri</span></td></tr>
+      <tr class="win"><td>AI scoring + early-warning + transparansi DI DALAM software koperasi</td><td>— tidak ada —</td><td><span class="tag green">BLUE OCEAN</span></td></tr>
+    </table>
+    <p class="note">Terbukti di luar (SaccoScore Kenya, Amartha Ascore.ai) — belum ada versi KDMP. Pasca eFishery &amp; Investree, "keuangan transparan &amp; anti-fraud" justru jadi nilai jual.</p>
+  </section>
+
+  <!-- 8 DAMPAK -->
+  <section class="slide red">
+    <div class="kicker">Dampak</div>
+    <h2>Mengubah angka yang menakutkan jadi terkendali.</h2>
+    <div class="stat">
+      <div class="item"><div class="v" style="color:#fff">Rp85,96 T</div><div class="l" style="color:#ffe1e3">eksposur gagal bayar yang dilindungi</div></div>
+      <div class="item"><div class="v" style="color:#fff">80.000</div><div class="l" style="color:#ffe1e3">koperasi dipantau real-time</div></div>
+      <div class="item"><div class="v" style="color:#fff">Jutaan</div><div class="l" style="color:#ffe1e3">anggota dengan ledger transparan</div></div>
+    </div>
+  </section>
+
+  <!-- 9 ARSITEKTUR -->
+  <section class="slide dark">
+    <div class="kicker">Arsitektur MVP</div>
+    <h2>Ramping, semua komponen terbukti.</h2>
+    <div class="row">
+      <div class="col"><h3 style="color:#fff">Hulu</h3>
+        <ul><li>WhatsApp Cloud API (sandbox)</li><li>Agen Claude: Vision OCR + ASR + reasoning</li><li>Jurnal double-entry otomatis</li></ul></div>
+      <div class="col"><h3 style="color:#fff">Otak</h3>
+        <ul><li>Mesin laporan SAK EMKM + paket RAT</li><li>Mesin Skor: Benford + rules + scoring</li><li>Dedup anggota via NIK (Dukcapil)</li></ul></div>
+      <div class="col"><h3 style="color:#fff">Hilir</h3>
+        <ul><li>Portal Next.js — 3 peran</li><li>Export "SimkopDes-ready"</li><li>(roadmap) anchor hash ke ledger PoA</li></ul></div>
+    </div>
+    <p class="disc">Stack: Next.js · Supabase/Postgres · Claude · Python (Benford/Prophet). Keamanan: OWASP + UU PDP — enkripsi NIK, RBAC, audit log, sanitasi input.</p>
+  </section>
+
+  <!-- 10 DEMO -->
+  <section class="slide">
+    <div class="kicker">Demo Live — 90 detik</div>
+    <h2>Yang akan juri lihat.</h2>
+    <ul>
+      <li><strong>0–10s</strong> — "80.015 dibentuk, 1.061 jalan. Kenapa? Tak bisa membukukan."</li>
+      <li><strong>10–40s</strong> — kirim foto nota + suara "jual beras 5 karung" ke WhatsApp → jurnal tercatat.</li>
+      <li><strong>40–55s</strong> — klik "Laporan RAT" → <strong>neraca &amp; laba-rugi SAK EMKM muncul dari nol.</strong></li>
+      <li><strong>55–75s</strong> — dashboard: <strong>Skor Sehat 72/100</strong>, bendera anomali Benford, "layak kredit Rp450 jt".</li>
+      <li><strong>75–90s</strong> — "Anggota, bank, pemerintah lihat data yang sama. Inilah cara melindungi Rp85,96 T."</li>
+    </ul>
+  </section>
+
+  <!-- 11 KENAPA MENANG -->
+  <section class="slide dark">
+    <div class="kicker">Kenapa Menang</div>
+    <h2>Cocok dengan formula juara govtech.</h2>
+    <div class="cards">
+      <div class="card"><div class="n">25%</div><h3>Inovasi</h3><p>Pertama menggabungkan capture agentic low-literacy → laporan → skor untuk KDMP.</p></div>
+      <div class="card"><div class="n">20%</div><h3>Dampak</h3><p>Program flagship + efisiensi fiskal + transparansi dana publik.</p></div>
+      <div class="card"><div class="n">25%</div><h3>Usability</h3><p>Antarmuka WhatsApp + suara = nol kurva belajar bagi pengurus desa.</p></div>
+    </div>
+    <p class="note">Pola pemenang nyata: GovAI Kemenkeu 2024 (AI + program flagship), #UangKita (transparansi dana). Di BI-OJK 2025, <b>AI/ML mengalahkan blockchain</b> — maka AI jadi bintang, blockchain hanya roadmap.</p>
+  </section>
+
+  <!-- 12 CLOSING -->
+  <section class="slide red">
+    <div class="brand">
+      <div class="logo"><div class="r"></div><div class="w"></div></div>
+      <span style="font-weight:700;font-size:1.3vw">Ecodigitus</span>
+    </div>
+    <h1 style="font-size:4.4vw">Koperasi desa butuh otak,<br>bukan sekadar kasir.</h1>
+    <p class="lead" style="margin-top:2.4vh">KOPILOT memberi koperasi desa kemampuan membukukan, dipercaya, dan layak kredit — dimulai dari satu pesan WhatsApp.</p>
+    <p style="margin-top:3vh;color:#ffe9eb">Terima kasih · Tim Ecodigitus · <strong>edigkop</strong></p>
+  </section>
+
+</div>
+
+<div class="prog" style="display:none"></div>
+<div class="pageno" id="pageno">1 / 12</div>
+<div class="nav">
+  <button onclick="go(-1)" aria-label="Sebelumnya">‹</button>
+  <button onclick="go(1)" aria-label="Berikutnya">›</button>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  let i=0;
+  function show(n){
+    slides[i].classList.remove('active');
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides[i].classList.add('active');
+    document.getElementById('pageno').textContent=(i+1)+' / '+slides.length;
+    document.getElementById('prog').style.width=((i+1)/slides.length*100)+'%';
+  }
+  function go(d){show(i+d)}
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown')go(1);
+    if(e.key==='ArrowLeft'||e.key==='PageUp')go(-1);
+    if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1);
+  });
+  let sx=0;
+  document.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+  document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)>50)go(dx<0?1:-1)},{passive:true});
+  document.getElementById('stage').addEventListener('click',e=>{
+    if(e.target.closest('.nav'))return;
+    if(e.clientX>window.innerWidth*0.5)go(1);else go(-1);
+  });
+  show(0);
+</script>
+</body>
+</html>
