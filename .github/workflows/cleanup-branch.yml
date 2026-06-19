@@ -1,0 +1,22 @@
+name: Cleanup stale branch
+
+on:
+  push:
+    branches: ["main"]
+    paths: [".github/workflows/cleanup-branch.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete stale branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/claude/gracious-keller-s6twz7" \
+            && echo "Branch deleted." \
+            || echo "Branch already gone or not deletable."
