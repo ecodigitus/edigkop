@@ -2,7 +2,7 @@ name: Deploy KOPILOT deck to GitHub Pages
 
 on:
   push:
-    branches: ["claude/gracious-keller-s6twz7"]
+    branches: ["main"]
     paths:
       - "deck/**"
       - ".github/workflows/pages.yml"
