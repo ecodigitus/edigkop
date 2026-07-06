@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- KOPILOT pitch deck · Ecodigitus · build 3 -->
+<!-- EdigDaya pitch deck · EdigDev · build 4 -->
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KOPILOT — Pitch Deck | Ecodigitus × Hack the Cooperatives 2026</title>
+<title>EdigDaya — Pitch Deck | EdigDev × Hackathon Digital Cooperatives Expo 2026</title>
 <style>
   :root{
     --merah:#D32030; --merah-d:#A41320; --putih:#ffffff;
@@ -58,7 +58,7 @@
   tr.win{background:#fff5f5} tr.win td{font-weight:700;color:var(--ink)}
   .tag{display:inline-block;background:var(--merah);color:#fff;font-size:1vw;font-weight:700;
     padding:.5vh 1vw;border-radius:999px}
-  .tag.green{background:var(--green)} .tag.muted{background:#8a93a3}
+  .tag.green{background:var(--green)} .tag.muted{background:#8a93a3} .tag.gold{background:var(--gold)}
   .flow{display:flex;align-items:center;gap:1.2vw;flex-wrap:wrap;margin-top:3vh}
   .flow .step{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:2vh 1.4vw;
     flex:1;min-width:160px;text-align:center}
@@ -82,12 +82,20 @@
   .pageno{position:fixed;bottom:2.2vh;left:2vw;font-size:.95vw;color:#7a8395;z-index:10}
   .note{font-size:1vw;color:var(--muted);margin-top:2vh;font-style:italic}
   .disc{font-size:.9vw;color:#9aa6ba;margin-top:2vh}
+  .people{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6vw;margin-top:3vh}
+  .person{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:2.2vh 1.6vw;text-align:center}
+  .slide.dark .person{background:#222a39;border-color:#333d52}
+  .person .avatar{width:4.4vw;height:4.4vw;border-radius:50%;background:linear-gradient(135deg,var(--merah),var(--gold));
+    margin:0 auto 1.2vh}
+  .person h3{font-size:1.35vw;margin-bottom:.3vh}
+  .person .role{font-size:1.05vw;color:var(--merah);font-weight:700}
   @media(max-width:820px){
     h1{font-size:9vw}h2{font-size:6vw}.big{font-size:16vw}p,li,.lead{font-size:3.4vw}
     .kicker{font-size:2.6vw}.cards{grid-template-columns:1fr}.card .n{font-size:7vw}
     .stat .v{font-size:11vw}.stat .l{font-size:3vw}table{font-size:2.8vw}th{font-size:2.4vw}
     .flow{flex-direction:column}.flow .arr{transform:rotate(90deg)}.logo{width:11vw;height:11vw}
     .footer,.pageno{font-size:2.4vw}.note,.disc{font-size:2.6vw}
+    .people{grid-template-columns:1fr}.person .avatar{width:14vw;height:14vw}.person h3{font-size:4vw}.person .role{font-size:3.2vw}
   }
 </style>
 </head>
@@ -95,151 +103,156 @@
 <div class="prog" id="prog"></div>
 <div class="stage" id="stage">
 
-  <!-- 1 TITLE -->
+  <!-- 1 COVER -->
   <section class="slide active red">
     <div class="brand">
       <div class="logo"><div class="r"></div><div class="w"></div></div>
-      <span style="font-weight:700;font-size:1.3vw">Ecodigitus</span>
+      <span style="font-weight:700;font-size:1.3vw">EdigDev</span>
     </div>
-    <div class="kicker">Hack the Cooperatives · SimkopDes · 10–11 Juli 2026</div>
-    <h1>KOPILOT</h1>
-    <p class="lead" style="margin-top:2.4vh;max-width:60vw">AI Co-pilot Kesehatan &amp; Kepercayaan Koperasi Desa Merah Putih.<br>
-    Dari <strong>foto nota &amp; pesan suara</strong> → <strong>laporan keuangan</strong> → <strong>skor kepercayaan</strong> yang transparan.</p>
-    <div style="margin-top:4vh"><span class="pill">Tim Ecodigitus</span></div>
+    <div class="kicker">Hackathon Digital Cooperatives Expo 2026 · Kemenkop RI</div>
+    <h1>EdigDaya</h1>
+    <p class="lead" style="margin-top:2.4vh;max-width:62vw">Memulihkan kepercayaan masyarakat akar rumput terhadap koperasi desa — lewat <strong>registrasi terpandu</strong>, <strong>permodalan bagi-hasil berbasis AI</strong>, dan <strong>transparansi tata kelola</strong>.</p>
+    <div style="margin-top:4vh;display:flex;gap:1vw;flex-wrap:wrap">
+      <span class="pill">Tim EdigDev</span>
+      <span class="pill">Pilar 2 — Keterlibatan Masyarakat dalam Berkoperasi</span>
+    </div>
   </section>
 
-  <!-- 2 MASALAH -->
+  <!-- 2 PROBLEM STATEMENT -->
   <section class="slide">
-    <div class="kicker">Masalah</div>
-    <h2>80 ribu koperasi dibentuk.<br>Hanya seribu yang hidup.</h2>
+    <div class="kicker">Problem Statement</div>
+    <h2>Koperasi menyusut. Kepercayaan ambruk.</h2>
     <div class="stat">
-      <div class="item"><div class="v red">80.015</div><div class="l">koperasi <b>terbentuk</b> (Jun 2025)</div></div>
-      <div class="item"><div class="v gold">±1.061</div><div class="l">yang <b>benar-benar beroperasi</b> (Jun 2026)</div></div>
-      <div class="item"><div class="v">80k→40k</div><div class="l">target operasional 2026 <b>dipangkas 50%</b></div></div>
+      <div class="item"><div class="v red">209.488→130.119</div><div class="l">unit koperasi nasional (2014→2023) — 82.000 dibersihkan karena tidak aktif</div></div>
+      <div class="item"><div class="v gold">71,5%</div><div class="l">koperasi yang <b>menggelar RAT</b> — sisanya minim akuntabilitas ke anggota</div></div>
+      <div class="item"><div class="v">~10%</div><div class="l">koperasi yang <b>memanfaatkan teknologi digital</b></div></div>
     </div>
-    <p class="note">Sumber: Kemenkop via Bisnis.com, 12 Jun 2026. Gerai nyata "sepi pembeli / stok kosong, mulai berguguran" (Kompas Regional).</p>
+    <p class="note">80.000+ Koperasi Desa Merah Putih (KDMP) dibentuk lewat Inpres No. 9/2025 di atas fondasi ini — pengguna rata-rata berusia 55 tahun (Sensus Pertanian 2023), minim literasi digital.</p>
   </section>
 
   <!-- 3 AKAR MASALAH -->
   <section class="slide dark">
-    <div class="kicker">Akar Masalah</div>
-    <h2>Pengurus desa tidak bisa membukukan.</h2>
-    <p class="lead" style="max-width:64vw">Tanpa pencatatan → <strong>tak ada laporan keuangan</strong> → <strong>tak bisa RAT</strong> → <strong>tak bisa dimonitor</strong> → <strong>tak bisa diberi / melunasi kredit Rp3 M.</strong> Semua masalah hilir lahir dari satu titik buntu di hulu.</p>
-    <div class="stat">
-      <div class="item"><div class="v red">10,7%</div><div class="l">pelatihan pengurus baru tuntas (Nov 2025) — INDEF: kapasitas SDM = masalah #1</div></div>
-      <div class="item"><div class="v gold">65%</div><div class="l">perangkat desa melihat potensi korupsi (survei CELIOS)</div></div>
-      <div class="item"><div class="v">Rp85,96 T</div><div class="l">proyeksi risiko gagal bayar 6 tahun (CELIOS)</div></div>
-    </div>
-  </section>
-
-  <!-- 4 SOLUSI -->
-  <section class="slide red">
-    <div class="kicker">Solusi</div>
-    <h2>Perbaiki tangkap-data di hulu dengan AI.</h2>
-    <p class="lead" style="max-width:66vw">KOPILOT adalah <strong>agen AI di WhatsApp</strong>. Pengurus berliterasi rendah cukup kirim <strong>foto nota</strong> atau <strong>pesan suara Bahasa daerah</strong>. AI mencatat jurnal, menyusun <strong>laporan SAK EMKM siap-RAT</strong>, dan dari data yang sama menghitung <strong>"Skor Sehat Koperasi"</strong> yang transparan.</p>
-    <div style="margin-top:3vh"><span class="pill">Nol kurva belajar — antarmukanya WhatsApp</span></div>
-  </section>
-
-  <!-- 5 CARA KERJA -->
-  <section class="slide">
-    <div class="kicker">Cara Kerja</div>
-    <h2>Tiga langkah, satu pesan WhatsApp.</h2>
-    <div class="flow">
-      <div class="step"><div class="ico">📸🎙️</div><h3>1. Kirim</h3><p>Foto nota / suara<br>"jual beras 5 karung"</p></div>
-      <div class="arr">→</div>
-      <div class="step"><div class="ico">🤖</div><h3>2. AI proses</h3><p>Vision + suara → jurnal double-entry otomatis</p></div>
-      <div class="arr">→</div>
-      <div class="step"><div class="ico">📊</div><h3>3. Hasil</h3><p>Laporan SAK EMKM + Skor Sehat seketika</p></div>
-    </div>
-    <p class="note">Vision-LLM (tanpa OCR engine terpisah) · ASR Bahasa Indonesia/daerah · agen Claude untuk klasifikasi akun &amp; deteksi anomali.</p>
-  </section>
-
-  <!-- 6 SKOR SEHAT -->
-  <section class="slide dark">
-    <div class="kicker">Fitur Killer — Skor Sehat Koperasi</div>
-    <h2>Satu skor. Tiga mata yang melihat.</h2>
+    <div class="kicker">Problem Statement — Akar Masalah Lapangan</div>
+    <h2>Tiga penghalang di tingkat desa.</h2>
     <div class="cards">
-      <div class="card"><div class="n">🛡️</div><h3>Anti-Fraud</h3><p>Benford's Law + rules: deteksi mark-up modal awal, angka bulat janggal, koperasi fiktif (dedup NIK).</p></div>
-      <div class="card"><div class="n">⚠️</div><h3>Peringatan Dini</h3><p>Sinyal gagal bayar &amp; likuiditas sebelum macet — lindungi eksposur Rp85,96 T.</p></div>
-      <div class="card"><div class="n">✅</div><h3>Kesiapan Kredit</h3><p>"Layak Rp450 jt, bukan Rp3 M" — keputusan Himbara berbasis data nyata.</p></div>
+      <div class="card"><div class="n">01</div><h3>Registrasi Eksklusif</h3><p>Pendaftaran anggota masih manual, menyekat warga yang minim akses informasi.</p></div>
+      <div class="card"><div class="n">02</div><h3>Tanpa Fasilitator</h3><p>Warga berlahan potensial minim pengetahuan teknis & literasi digital; komoditas gagal dipetakan.</p></div>
+      <div class="card"><div class="n">03</div><h3>Tata Kelola Buram</h3><p>Logistik & keuangan koperasi belum transparan → memicu mosi tidak percaya anggota.</p></div>
     </div>
-    <p class="note">Transparan untuk <b>Anggota</b> (ledger terbuka) · <b>Bank Himbara</b> (alasan skor) · <b>Pemerintah</b> (peta risiko 80k koperasi).</p>
   </section>
 
-  <!-- 7 BLUE OCEAN -->
-  <section class="slide">
-    <div class="kicker">Posisi Pasar</div>
-    <h2>Incumbent main di operasi. Kami main di kecerdasan.</h2>
-    <table>
-      <tr><th>Ruang</th><th>Pemain</th><th>Status</th></tr>
-      <tr><td>POS / akuntansi / dashboard KDMP</td><td>Telkom Digi Koperasi, KDMP.ID, SmartKoperasi/BRI</td><td><span class="tag muted">Sangat ramai</span></td></tr>
-      <tr><td>Software simpan-pinjam</td><td>Koperasiku, USSI, Koperasiweb</td><td><span class="tag muted">Non-AI</span></td></tr>
-      <tr><td>Credit scoring P2P</td><td>Amartha, Kredivo</td><td><span class="tag muted">Captive sendiri</span></td></tr>
-      <tr class="win"><td>AI scoring + early-warning + transparansi DI DALAM software koperasi</td><td>— tidak ada —</td><td><span class="tag green">BLUE OCEAN</span></td></tr>
-    </table>
-    <p class="note">Terbukti di luar (SaccoScore Kenya, Amartha Ascore.ai) — belum ada versi KDMP. Pasca eFishery &amp; Investree, "keuangan transparan &amp; anti-fraud" justru jadi nilai jual.</p>
-  </section>
-
-  <!-- 8 DAMPAK -->
+  <!-- 4 SOLUSI OVERVIEW -->
   <section class="slide red">
-    <div class="kicker">Dampak</div>
-    <h2>Mengubah angka yang menakutkan jadi terkendali.</h2>
-    <div class="stat">
-      <div class="item"><div class="v" style="color:#fff">Rp85,96 T</div><div class="l" style="color:#ffe1e3">eksposur gagal bayar yang dilindungi</div></div>
-      <div class="item"><div class="v" style="color:#fff">80.000</div><div class="l" style="color:#ffe1e3">koperasi dipantau real-time</div></div>
-      <div class="item"><div class="v" style="color:#fff">Jutaan</div><div class="l" style="color:#ffe1e3">anggota dengan ledger transparan</div></div>
-    </div>
-  </section>
-
-  <!-- 9 ARSITEKTUR -->
-  <section class="slide dark">
-    <div class="kicker">Arsitektur MVP</div>
-    <h2>Ramping, semua komponen terbukti.</h2>
+    <div class="kicker">Solution & Architecture — Tiga Pilar</div>
+    <h2>EdigDaya: pendamping digital koperasi desa.</h2>
     <div class="row">
-      <div class="col"><h3 style="color:#fff">Hulu</h3>
-        <ul><li>WhatsApp Cloud API (sandbox)</li><li>Agen Claude: Vision OCR + ASR + reasoning</li><li>Jurnal double-entry otomatis</li></ul></div>
-      <div class="col"><h3 style="color:#fff">Otak</h3>
-        <ul><li>Mesin laporan SAK EMKM + paket RAT</li><li>Mesin Skor: Benford + rules + scoring</li><li>Dedup anggota via NIK (Dukcapil)</li></ul></div>
-      <div class="col"><h3 style="color:#fff">Hilir</h3>
-        <ul><li>Portal Next.js — 3 peran</li><li>Export "SimkopDes-ready"</li><li>(roadmap) anchor hash ke ledger PoA</li></ul></div>
+      <div class="col"><h3 style="color:#fff">1. Registrasi Terpandu</h3><p>Petugas lapangan dampingi pendaftaran + verifikasi KTP/wajah + data lahan → arahan pertanian presisi. Poin Gotong Royong (referral) → cair jadi SHU.</p></div>
+      <div class="col"><h3 style="color:#fff">2. Permodalan Bagi Hasil</h3><p>AI menganalisis data lahan tervalidasi → salurkan modal kerja (pupuk/bibit) presisi, menggantikan pinjaman berbunga.</p></div>
+      <div class="col"><h3 style="color:#fff">3. Transparansi</h3><p>Dashboard real-time arus logistik & keuangan + cetak laporan fisik untuk papan informasi desa — menjangkau warga tanpa gawai.</p></div>
     </div>
-    <p class="disc">Stack: Next.js · Supabase/Postgres · Claude · Python (Benford/Prophet). Keamanan: OWASP + UU PDP — enkripsi NIK, RBAC, audit log, sanitasi input.</p>
   </section>
 
-  <!-- 10 DEMO -->
+  <!-- 5 ARSITEKTUR -->
   <section class="slide">
-    <div class="kicker">Demo Live — 90 detik</div>
-    <h2>Yang akan juri lihat.</h2>
-    <ul>
-      <li><strong>0–10s</strong> — "80.015 dibentuk, 1.061 jalan. Kenapa? Tak bisa membukukan."</li>
-      <li><strong>10–40s</strong> — kirim foto nota + suara "jual beras 5 karung" ke WhatsApp → jurnal tercatat.</li>
-      <li><strong>40–55s</strong> — klik "Laporan RAT" → <strong>neraca &amp; laba-rugi SAK EMKM muncul dari nol.</strong></li>
-      <li><strong>55–75s</strong> — dashboard: <strong>Skor Sehat 72/100</strong>, bendera anomali Benford, "layak kredit Rp450 jt".</li>
-      <li><strong>75–90s</strong> — "Anggota, bank, pemerintah lihat data yang sama. Inilah cara melindungi Rp85,96 T."</li>
-    </ul>
+    <div class="kicker">Solution & Architecture — Alur Sistem</div>
+    <h2>Dari pendataan lapangan sampai papan informasi desa.</h2>
+    <div class="flow">
+      <div class="step"><div class="ico">🧑‍🌾</div><h3>Registrasi</h3><p>Petugas lapangan + verifikasi KTP/wajah + data lahan</p></div>
+      <div class="arr">→</div>
+      <div class="step"><div class="ico">🗄️</div><h3>Data Tervalidasi</h3><p>Supabase/PostgreSQL — anggota, lahan, transaksi</p></div>
+      <div class="arr">→</div>
+      <div class="step"><div class="ico">🤖</div><h3>Rekomendasi AI</h3><p>Arahan tanam & kelayakan modal bagi-hasil</p></div>
+      <div class="arr">→</div>
+      <div class="step"><div class="ico">🖨️</div><h3>Transparansi</h3><p>Dashboard real-time + laporan fisik papan desa</p></div>
+    </div>
+    <p class="note">Stack: Next.js (web/PWA) · Supabase/PostgreSQL · Docker · LLM (alat bantu teknis, sesuai aturan penggunaan AI kompetisi).</p>
   </section>
 
-  <!-- 11 KENAPA MENANG -->
+  <!-- 6 FOKUS DEMO -->
   <section class="slide dark">
-    <div class="kicker">Kenapa Menang</div>
-    <h2>Cocok dengan formula juara govtech.</h2>
-    <div class="cards">
-      <div class="card"><div class="n">25%</div><h3>Inovasi</h3><p>Pertama menggabungkan capture agentic low-literacy → laporan → skor untuk KDMP.</p></div>
-      <div class="card"><div class="n">20%</div><h3>Dampak</h3><p>Program flagship + efisiensi fiskal + transparansi dana publik.</p></div>
-      <div class="card"><div class="n">25%</div><h3>Usability</h3><p>Antarmuka WhatsApp + suara = nol kurva belajar bagi pengurus desa.</p></div>
+    <div class="kicker">Kemudahan Implementasi</div>
+    <h2>Satu alur utuh — bukan super-app.</h2>
+    <p class="lead" style="max-width:64vw">Sprint hacking hanya 24–36 jam. EdigDaya didemokan lewat <strong>satu alur end-to-end</strong>: registrasi terpandu → data tervalidasi tampil di dashboard → 1 rekomendasi AI → laporan fisik siap cetak. Fitur lanjutan (mesin bagi-hasil penuh, Poin Gotong Royong) tampil sebagai roadmap.</p>
+    <div style="margin-top:3vh"><span class="pill">Fokus > cakupan luas</span></div>
+  </section>
+
+  <!-- 7 RELEVANSI TEMA -->
+  <section class="slide">
+    <div class="kicker">Relevansi dengan Tema — Keterlibatan Masyarakat</div>
+    <h2>Menjawab langsung tantangan yang diajukan panitia.</h2>
+    <table>
+      <tr><th>Tantangan Tema (TOR)</th><th>Jawaban EdigDaya</th></tr>
+      <tr><td>Kenapa warga belum tertarik jadi anggota?</td><td>Registrasi terpandu petugas lapangan — hilangkan hambatan akses & literasi</td></tr>
+      <tr><td>Bagaimana engagement berkelanjutan?</td><td>Poin Gotong Royong — insentif nyata (SHU) untuk ajak anggota baru</td></tr>
+      <tr class="win"><td>Bagaimana transparansi & kemudahan layanan?</td><td><span class="tag green">Dashboard real-time + laporan fisik papan desa</span></td></tr>
+    </table>
+    <p class="note">Bobot "Relevansi dengan Permasalahan/Tantangan" = 25% — terbesar dari seluruh kriteria penilaian.</p>
+  </section>
+
+  <!-- 8 BUSINESS & IMPACT MODEL -->
+  <section class="slide red">
+    <div class="kicker">Business & Impact Model</div>
+    <h2>Mandiri secara finansial — tanpa subsidi APBN.</h2>
+    <div class="row">
+      <div class="col"><h3 style="color:#fff">Sumber Pendapatan</h3>
+        <ul><li>Fee manajemen dari bagi-hasil panen yang berhasil disalurkan</li>
+        <li>Tier pendampingan profesional (opsional, berbayar)</li>
+        <li>Komisi kerja sama offtaker/pembeli hasil panen (roadmap)</li>
+        <li>SaaS berjenjang untuk koperasi lain</li></ul></div>
+      <div class="col"><h3 style="color:#fff">Metrik Dampak</h3>
+        <ul><li>Jumlah anggota baru via pendampingan lapangan</li>
+        <li>Kenaikan kehadiran RAT / partisipasi digital</li>
+        <li>Laporan fisik tercetak & terdistribusi ke papan desa</li>
+        <li>Volume modal bagi-hasil tersalurkan tanpa gagal bayar</li></ul></div>
     </div>
-    <p class="note">Pola pemenang nyata: GovAI Kemenkeu 2024 (AI + program flagship), #UangKita (transparansi dana). Di BI-OJK 2025, <b>AI/ML mengalahkan blockchain</b> — maka AI jadi bintang, blockchain hanya roadmap.</p>
+  </section>
+
+  <!-- 9 TANGGA L0-L4 -->
+  <section class="slide dark">
+    <div class="kicker">Pendekatan Modernisasi Bertahap</div>
+    <h2>Menjumpai koperasi di titik mereka berada.</h2>
+    <p class="lead" style="max-width:64vw">Koperasi tidak bisa melompat langsung ke otomasi penuh. EdigDaya memikul beban teknis lewat <strong>petugas lapangan sebagai jembatan manusia</strong>, sementara AI bekerja di belakang layar — plus laporan fisik untuk warga tanpa gawai sama sekali.</p>
+    <div class="cards">
+      <div class="card"><h3>Tata Kelola</h3><p>Dashboard & laporan fisik terstandardisasi</p></div>
+      <div class="card"><h3>Literasi SDM</h3><p>Petugas lapangan mendampingi, bukan warga belajar sendiri</p></div>
+      <div class="card"><h3>Keamanan Data</h3><p>Enkripsi sesuai UU PDP sejak hari pertama</p></div>
+    </div>
+  </section>
+
+  <!-- 10 KEAMANAN & KEPATUHAN -->
+  <section class="slide">
+    <div class="kicker">Kualitas Teknologi — Keamanan & Kepatuhan</div>
+    <h2>Data anggota dijaga sesuai standar.</h2>
+    <ul>
+      <li>Enkripsi data pribadi (NIK, foto KTP/wajah) saat disimpan & saat transit (TLS)</li>
+      <li>RBAC per peran: warga, petugas lapangan, pengurus koperasi</li>
+      <li>Audit log untuk setiap perubahan data lahan/transaksi</li>
+      <li>Consent eksplisit sebelum verifikasi foto KTP/wajah, sesuai UU PDP</li>
+    </ul>
+    <p class="disc">Disclosure penggunaan AI: Claude digunakan sebagai alat bantu riset publik, penataan dokumen/deck, dan kode pendukung. Ide inti & solusi adalah gagasan asli Tim EdigDev.</p>
+  </section>
+
+  <!-- 11 TEAM PROFILE -->
+  <section class="slide dark">
+    <div class="kicker">Team Profile</div>
+    <h2>Tim EdigDev.</h2>
+    <div class="people">
+      <div class="person"><div class="avatar"></div><h3>[Nama Anggota 1]</h3><div class="role">Ketua Tim</div></div>
+      <div class="person"><div class="avatar"></div><h3>[Nama Anggota 2]</h3><div class="role">[Peran]</div></div>
+      <div class="person"><div class="avatar"></div><h3>[Nama Anggota 3]</h3><div class="role">[Peran]</div></div>
+    </div>
+    <p class="note">Lengkapi nama & peran sebelum ekspor final ke PDF.</p>
   </section>
 
   <!-- 12 CLOSING -->
   <section class="slide red">
     <div class="brand">
       <div class="logo"><div class="r"></div><div class="w"></div></div>
-      <span style="font-weight:700;font-size:1.3vw">Ecodigitus</span>
+      <span style="font-weight:700;font-size:1.3vw">EdigDev</span>
     </div>
-    <h1 style="font-size:4.4vw">Koperasi desa butuh otak,<br>bukan sekadar kasir.</h1>
-    <p class="lead" style="margin-top:2.4vh">KOPILOT memberi koperasi desa kemampuan membukukan, dipercaya, dan layak kredit — dimulai dari satu pesan WhatsApp.</p>
-    <p style="margin-top:3vh;color:#ffe9eb">Terima kasih · Tim Ecodigitus · <strong>edigkop</strong></p>
+    <h1 style="font-size:4.4vw">Koperasi desa butuh kepercayaan,<br>bukan sekadar aplikasi.</h1>
+    <p class="lead" style="margin-top:2.4vh">EdigDaya menghubungkan kembali warga akar rumput dengan koperasinya — didampingi, dipercaya, dan sejahtera bersama.</p>
+    <p style="margin-top:3vh;color:#ffe9eb">Terima kasih · Tim EdigDev · <strong>EdigDaya</strong></p>
   </section>
 
 </div>
