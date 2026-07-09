@@ -12,7 +12,7 @@
 import { koperasi } from './business';
 import { rupiah } from './format';
 import { creditSimpanan } from './simpanan';
-import type { Member } from './members';
+import { persistMember, type Member } from './members';
 
 type CampaignKind = 'nudge' | 'vote';
 type Option = { key: string; label: string };
@@ -163,6 +163,7 @@ function handleNudgeReply(jid: string, t: string, c: Campaign, m: Member): strin
     creditSimpanan(m, 'wajib', koperasi.simpanan.wajib); // beneran menambah saldo (bukan sekadar poin)
     m.poin += 50;
     m.skorKeterlibatan = Math.min(100, m.skorKeterlibatan + 7);
+    persistMember(m); // write-through saldo, poin & skor baru ke Supabase
     return (
       `✅ Siap, *${m.nama}*! Pembayaran *simpanan wajib ${rupiah(koperasi.simpanan.wajib)}* tercatat 🎉\n\n` +
       `💰 Total simpanan wajib kamu kini: *${rupiah(m.simpananWajib)}*\n` +

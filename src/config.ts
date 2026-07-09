@@ -39,6 +39,12 @@ export const config = {
     model: process.env.ANTHROPIC_MODEL?.trim() || 'claude-opus-4-8',
     maxTokens: num('ANTHROPIC_MAX_TOKENS', 1024),
   },
+  supabase: {
+    // DB bersama bot + dashboard. KOSONG = bot pakai data dummy in-memory (fallback).
+    url: process.env.SUPABASE_URL?.trim() ?? '',
+    // SECRET server-side (bypass RLS). Hanya di .env bot, tak pernah di frontend.
+    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ?? '',
+  },
   simkopdes: {
     // Endpoint API pendaftaran SIMKOPDES. KOSONG = pakai adapter dummy (in-memory).
     apiUrl: process.env.SIMKOPDES_API_URL?.trim() ?? '',

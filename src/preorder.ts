@@ -19,6 +19,7 @@
  */
 import { config } from './config';
 import { rupiah } from './format';
+import { dbEnabled, fetchAll, upsert } from './db';
 
 type POStatus = 'MENUNGGU_ADMIN' | 'DIQUOTE' | 'DP_DIBAYAR' | 'FINAL' | 'BATAL';
 
@@ -205,6 +206,7 @@ function createPo(jid: string, d: PoDraft): string {
     produsenIdx: 0,
   };
   pos.set(id, po);
+  persistPo(po); // write-through PO baru
   drafts.delete(jid);
 
   // Notifikasi ke admin (Input → admin bridge ke produsen)
@@ -246,11 +248,13 @@ export function handlePoUserReply(jid: string, text: string): string | null {
 
   if (no) {
     po.status = 'BATAL';
+    persistPo(po);
     notifyAdmins(`❌ *${po.id}* dibatalkan oleh ${po.userName}.`);
     return `Oke, *${po.id}* dibatalkan. Makasih ya, boleh pesan lagi kapan aja. 🙏`;
   }
 
   po.status = 'DP_DIBAYAR';
+  persistPo(po);
   notifyAdmins(
     `💰 *${po.id}* disetujui ${po.userName}. DP ${rupiah(po.dp ?? 0)} *terbayar (demo)*.\n` +
       `Finalisasi: *po final ${po.id}*`,
@@ -360,6 +364,7 @@ function adminQuote(idRaw: string, hargaRaw: string, durasiRaw: string, produsen
   po.durasiHari = durasi;
   if (produsen.trim()) po.produsen = produsen.trim();
   po.status = 'DIQUOTE';
+  persistPo(po);
 
   // Notifikasi penawaran ke user (Validasi → Konfirmasi)
   notify(
@@ -380,12 +385,14 @@ function adminAlih(idRaw: string, produsen: string): string {
   if (!po) return `PO tidak ditemukan.`;
   if (produsen.trim()) {
     po.produsen = produsen.trim();
+    persistPo(po);
     return `🔄 Produsen ${po.id} dialihkan ke *${po.produsen}*.`;
   }
   // Tanpa argumen: pindah ke kandidat cadangan berikutnya (Poin 2).
   if (po.produsenKandidat.length <= 1) return `Tak ada produsen cadangan untuk ${po.id}. Isi manual: *po alih ${po.id} <produsen>*`;
   po.produsenIdx = (po.produsenIdx + 1) % po.produsenKandidat.length;
   po.produsen = po.produsenKandidat[po.produsenIdx]!;
+  persistPo(po);
   return `🔄 Produsen ${po.id} dialihkan ke cadangan: *${po.produsen}*. (quote ulang bila perlu)`;
 }
 
@@ -394,6 +401,7 @@ function adminFinal(idRaw: string): string {
   if (!po) return `PO tidak ditemukan.`;
   if (po.status !== 'DP_DIBAYAR') return `⚠️ ${po.id} belum bisa difinalisasi (status: ${po.status}). Finalisasi setelah DP dibayar.`;
   po.status = 'FINAL';
+  persistPo(po);
   notify(
     po.userJid,
     `✅ *${po.id} difinalisasi!*\n\n` +
@@ -408,6 +416,7 @@ function adminBatal(idRaw: string): string {
   const po = getPo(idRaw);
   if (!po) return `PO tidak ditemukan.`;
   po.status = 'BATAL';
+  persistPo(po);
   notify(po.userJid, `❌ Maaf, *${po.id}* (${po.produk}) dibatalkan oleh admin. Hubungi *pengurus* untuk info lebih lanjut.`);
   return `✅ ${po.id} dibatalkan. User sudah diberi tahu.`;
 }
@@ -447,4 +456,69 @@ function estimasi(durasiHari: number): string {
   const d = new Date();
   d.setDate(d.getDate() + durasiHari);
   return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// ---------------- Supabase: hydrate (seed) + write-through ----------------
+
+/** DB row (snake_case) -> PreOrder. */
+function rowToPo(r: Record<string, any>): PreOrder {
+  return {
+    id: r.id,
+    userJid: r.user_jid ?? '',
+    userName: r.user_name ?? 'Anggota',
+    produk: r.produk ?? '',
+    jumlah: r.jumlah ?? '',
+    qtyNum: r.qty_num ?? null,
+    catatan: r.catatan ?? '',
+    tanggalButuh: r.tanggal_butuh ?? '',
+    status: r.status,
+    hargaSaran: r.harga_saran ?? undefined,
+    harga: r.harga ?? undefined,
+    dp: r.dp ?? undefined,
+    durasiHari: r.durasi_hari ?? undefined,
+    produsen: r.produsen ?? 'Belum ditentukan',
+    produsenKandidat: Array.isArray(r.produsen_kandidat) ? r.produsen_kandidat : [],
+    produsenIdx: r.produsen_idx ?? 0,
+  };
+}
+
+/** PreOrder -> DB row. */
+function poToRow(po: PreOrder): Record<string, unknown> {
+  return {
+    id: po.id,
+    user_jid: po.userJid,
+    user_name: po.userName,
+    produk: po.produk,
+    jumlah: po.jumlah,
+    qty_num: po.qtyNum,
+    catatan: po.catatan,
+    tanggal_butuh: po.tanggalButuh,
+    status: po.status,
+    harga_saran: po.hargaSaran ?? null,
+    harga: po.harga ?? null,
+    dp: po.dp ?? null,
+    durasi_hari: po.durasiHari ?? null,
+    produsen: po.produsen,
+    produsen_kandidat: po.produsenKandidat,
+    produsen_idx: po.produsenIdx,
+  };
+}
+
+/** Muat PO dari Supabase ke `pos` (dipanggil sekali saat start). */
+export async function hydratePreOrders(): Promise<number> {
+  if (!dbEnabled) return 0;
+  const rows = await fetchAll('pre_orders');
+  for (const r of rows) {
+    const po = rowToPo(r);
+    pos.set(po.id, po);
+    const n = Number(po.id.replace(/\D/g, '')); // majukan counter agar id baru tak bentrok
+    if (Number.isFinite(n) && n > counter) counter = n;
+  }
+  return rows.length;
+}
+
+/** Write-through satu PO ke Supabase (fire-and-forget; no-op bila DB nonaktif). */
+function persistPo(po: PreOrder): void {
+  if (!dbEnabled) return;
+  upsert('pre_orders', poToRow(po), 'id');
 }

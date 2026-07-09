@@ -17,7 +17,7 @@
  */
 import { koperasi } from './business';
 import { rupiah } from './format';
-import type { Member } from './members';
+import { persistMember, type Member } from './members';
 
 export type JenisSimpanan = 'pokok' | 'wajib' | 'sukarela';
 
@@ -115,6 +115,7 @@ export function handleSetor(jid: string, m: Member, text: string): string | null
       const nominal = d.nominal!;
       creditSimpanan(m, jenis, nominal); // kredit dulu, lalu hapus draft → idempoten
       m.poin += POIN_SETOR;
+      persistMember(m); // write-through saldo & poin baru ke Supabase
       drafts.delete(jid);
       return receipt(m, jenis, nominal);
     }
