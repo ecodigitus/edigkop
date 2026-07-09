@@ -1,9 +1,9 @@
 import { matchMenu } from './menu';
 import { generateReply } from './ai';
 import { getHistory, record, inAiMode, setAiMode } from './session';
-import { getMember, isMember, type Member } from './members';
+import { getMember, isMember, forgetMember, type Member } from './members';
 import { handleProspect } from './onboarding';
-import { inActivation, startActivation, handleActivation, instantActivation } from './activation';
+import { inActivation, startActivation, handleActivation, instantActivation, cancelActivation } from './activation';
 import { inPoForm, handlePoForm, startPoForm, handlePoUserReply, listUserPo } from './preorder';
 import { dashboard, setViewRole } from './usaha';
 import { inSetor, handleSetor, startSetor } from './simpanan';
@@ -67,12 +67,28 @@ const VIEW_ANGGOTA = new Set(['mode anggota', 'lihat sebagai anggota', 'demo ang
 // Kata kunci Setor Simpanan (khusus anggota) — pokok/wajib/sukarela lewat 1 engine.
 const SETOR_ENTER = new Set(['setor', 'setor simpanan', 'bayar simpanan', 'nabung', 'menabung', 'setor tunai']);
 
+// DEMO: reset status nomor → kembali jadi calon anggota (untuk ulang demo aktivasi ke juri).
+const RESET = new Set(['reset', 'reset demo']);
+
 /**
  * Otak hybrid: form aktivasi → mode ngobrol AI → kenali anggota → campaign
  * → menu rule-based → fallback AI. Selalu mengembalikan string balasan.
  */
 export async function route(jid: string, text: string): Promise<string> {
   const t = text.trim().toLowerCase();
+
+  // 0) DEMO: reset — kembalikan nomor ke status calon anggota (welcome muncul lagi).
+  //    Dicek paling awal agar tetap jalan meski sedang di tengah alur (aktivasi/AI/dll).
+  if (RESET.has(t)) {
+    forgetMember(jid); // in-memory saja (non-destruktif; data Supabase tetap)
+    cancelActivation(jid);
+    setAiMode(jid, false);
+    return (
+      `🔄 *Reset demo berhasil.* Nomor ini kembali jadi *calon anggota*.\n\n` +
+      `Ketik *mulai* untuk lihat welcome & alur aktivasi dari awal. 🙌`
+    );
+  }
+
   const member = isMember(jid) ? getMember(jid) : null;
 
   // A) Sedang mengisi form aktivasi → lanjutkan langkah berikutnya

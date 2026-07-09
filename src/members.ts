@@ -7,6 +7,7 @@
  * (mis. SIMKOPDES) berdasarkan nomor terverifikasi.
  */
 import { makeCode, registerCode } from './referral';
+import { dbEnabled, fetchAll, upsert } from './db';
 
 /**
  * PERAN anggota (POV member di WhatsApp — papan tulis Hackathon poin 2 & 3).
@@ -150,6 +151,86 @@ export function activateMember(jid: string, member: Member): void {
   registered[jid] = member;
   // Anggota baru pun langsung bisa mengajak teman -> daftarkan kode referral-nya.
   registerCode(member.kodeReferral, member.nama);
+  persistMember(member, jid.split('@')[0] ?? ''); // write-through ke Supabase (dengan phone)
+}
+
+// ---------------- Supabase: hydrate (seed) + write-through ----------------
+
+/** DB row (snake_case) -> Member (camelCase). */
+function rowToMember(r: Record<string, any>): Member {
+  return {
+    nama: r.nama,
+    noAnggota: r.no_anggota,
+    sejak: r.sejak ?? '',
+    role: r.role === 'produsen' ? 'produsen' : 'anggota',
+    simpananPokok: Number(r.simpanan_pokok ?? 0),
+    simpananWajib: Number(r.simpanan_wajib ?? 0),
+    simpananSukarela: Number(r.simpanan_sukarela ?? 0),
+    estimasiSHU: Number(r.estimasi_shu ?? 0),
+    poin: Number(r.poin ?? 0),
+    lencana: r.lencana ?? '',
+    skorKeterlibatan: Number(r.skor_keterlibatan ?? 0),
+    pinjaman: r.pinjaman ?? null,
+    kodeReferral: r.kode_referral ?? '',
+    keuangan: r.keuangan ?? { modal: 0, pengeluaran: 0 },
+    usaha: r.usaha ?? null,
+  };
+}
+
+/** Member -> DB row. `phone` opsional: sertakan hanya saat diketahui (mis. aktivasi). */
+function memberToRow(m: Member, phone?: string): Record<string, unknown> {
+  const row: Record<string, unknown> = {
+    no_anggota: m.noAnggota,
+    nama: m.nama,
+    sejak: m.sejak,
+    role: m.role,
+    simpanan_pokok: m.simpananPokok,
+    simpanan_wajib: m.simpananWajib,
+    simpanan_sukarela: m.simpananSukarela,
+    estimasi_shu: m.estimasiSHU,
+    poin: m.poin,
+    lencana: m.lencana,
+    skor_keterlibatan: m.skorKeterlibatan,
+    kode_referral: m.kodeReferral,
+    keuangan: m.keuangan,
+    pinjaman: m.pinjaman,
+    usaha: m.usaha,
+    updated_at: new Date().toISOString(),
+  };
+  if (phone) row.phone = phone; // tak disertakan saat undefined -> tak menimpa phone di DB
+  return row;
+}
+
+/** Muat anggota dari Supabase ke `byPhone` (dipanggil sekali saat start). */
+export async function hydrateMembers(): Promise<number> {
+  if (!dbEnabled) return 0;
+  const rows = await fetchAll('members');
+  for (const r of rows) {
+    if (r.phone) byPhone[r.phone] = rowToMember(r); // timpa preset dgn nilai DB terkini
+  }
+  return rows.length;
+}
+
+/** Write-through profil anggota ke Supabase (fire-and-forget; no-op bila DB nonaktif). */
+export function persistMember(m: Member, phone?: string): void {
+  if (!dbEnabled) return;
+  upsert('members', memberToRow(m, phone), 'no_anggota');
+}
+
+/**
+ * DEMO: "lupakan" status anggota nomor ini (in-memory saja) → jadi calon anggota
+ * lagi, sehingga welcome 4-pilihan & alur aktivasi bisa diperagakan ulang ke juri.
+ * TIDAK menghapus data di Supabase (non-destruktif) dan tak menyentuh anggota seed.
+ */
+export function forgetMember(jid: string): boolean {
+  const phone = jid.split('@')[0] ?? '';
+  // Hapus dari KEDUA sumber pengenal anggota (in-memory):
+  //  - registered : anggota yang aktivasi di sesi berjalan
+  //  - byPhone    : anggota hasil hydrate dari Supabase (mis. sudah aktivasi lalu bot restart)
+  const existed = registered[jid] !== undefined || byPhone[phone] !== undefined;
+  delete registered[jid];
+  delete byPhone[phone];
+  return existed;
 }
 
 /** Bangun profil anggota BARU (saldo nol) dari data aktivasi. */
