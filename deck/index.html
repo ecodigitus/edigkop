@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- EdigDaya pitch deck · EdigDev · build 4 -->
+<!-- EdigDaya pitch deck · EdigDev · build 5 -->
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -143,37 +143,42 @@
 
   <!-- 4 SOLUSI OVERVIEW -->
   <section class="slide red">
-    <div class="kicker">Solution & Architecture — Tiga Pilar</div>
-    <h2>EdigDaya: pendamping digital koperasi desa.</h2>
+    <div class="kicker">Solution — Kanal WhatsApp-first</div>
+    <h2>Koperasi hadir di WhatsApp anggota.</h2>
+    <p class="lead" style="max-width:66vw">Antarmuka utama EdigDaya = <strong>chatbot WhatsApp resmi</strong> (menu ketik-angka, sudah dibangun tim) — kanal yang paling akrab bagi anggota desa berusia rata-rata 55 th. Petugas lapangan &amp; laporan fisik menjangkau yang belum digital. Tiga nilai yang dibawa:</p>
     <div class="row">
-      <div class="col"><h3 style="color:#fff">1. Registrasi Terpandu</h3><p>Petugas lapangan dampingi pendaftaran + verifikasi KTP/wajah + data lahan → arahan pertanian presisi. Poin Gotong Royong (referral) → cair jadi SHU.</p></div>
-      <div class="col"><h3 style="color:#fff">2. Permodalan Bagi Hasil</h3><p>AI menganalisis data lahan tervalidasi → salurkan modal kerja (pupuk/bibit) presisi, menggantikan pinjaman berbunga.</p></div>
-      <div class="col"><h3 style="color:#fff">3. Transparansi</h3><p>Dashboard real-time arus logistik & keuangan + cetak laporan fisik untuk papan informasi desa — menjangkau warga tanpa gawai.</p></div>
+      <div class="col"><h3 style="color:#fff">Keanggotaan Inklusif</h3><p>Registrasi terpandu + verifikasi KTP/wajah + Poin Gotong Royong (referral) yang cair jadi SHU.</p></div>
+      <div class="col"><h3 style="color:#fff">SHU & Transparansi</h3><p>Cek <strong>estimasi SHU real-time</strong> &amp; saldo dari WA; dashboard + laporan fisik papan desa untuk yang tanpa gawai.</p></div>
+      <div class="col"><h3 style="color:#fff">Suara Anggota (e-RAT)</h3><p><strong>Voting e-RAT yang sah</strong> langsung dari WhatsApp — verifikasi anggota, rekam suara, berita acara otomatis.</p></div>
     </div>
   </section>
 
-  <!-- 5 ARSITEKTUR -->
+  <!-- 5 ARSITEKTUR + EKOSISTEM SIMKOPDES -->
   <section class="slide">
-    <div class="kicker">Solution & Architecture — Alur Sistem</div>
-    <h2>Dari pendataan lapangan sampai papan informasi desa.</h2>
+    <div class="kicker">Solution & Architecture — Nyambung ke Ekosistem SimkopDes</div>
+    <h2>Lapisan WhatsApp-first di atas data SimkopDes.</h2>
     <div class="flow">
-      <div class="step"><div class="ico">🧑‍🌾</div><h3>Registrasi</h3><p>Petugas lapangan + verifikasi KTP/wajah + data lahan</p></div>
+      <div class="step"><div class="ico">💬</div><h3>Anggota</h3><p>WhatsApp resmi (menu ketik-angka) + petugas lapangan</p></div>
       <div class="arr">→</div>
-      <div class="step"><div class="ico">🗄️</div><h3>Data Tervalidasi</h3><p>Supabase/PostgreSQL — anggota, lahan, transaksi</p></div>
+      <div class="step"><div class="ico">🗄️</div><h3>EdigDaya</h3><p>Next.js · Supabase/PostgreSQL · Docker · LLM (alat bantu)</p></div>
+      <div class="arr">⇄</div>
+      <div class="step"><div class="ico">🏛️</div><h3>SimkopDes</h3><p>kelembagaan · transaksi/bisnis · rat · ews kesehatan-keuangan</p></div>
       <div class="arr">→</div>
-      <div class="step"><div class="ico">🤖</div><h3>Rekomendasi AI</h3><p>Arahan tanam & kelayakan modal bagi-hasil</p></div>
-      <div class="arr">→</div>
-      <div class="step"><div class="ico">🖨️</div><h3>Transparansi</h3><p>Dashboard real-time + laporan fisik papan desa</p></div>
+      <div class="step"><div class="ico">🖨️</div><h3>Transparansi</h3><p>Dashboard + laporan fisik papan desa</p></div>
     </div>
-    <p class="note">Stack: Next.js (web/PWA) · Supabase/PostgreSQL · Docker · LLM (alat bantu teknis, sesuai aturan penggunaan AI kompetisi).</p>
+    <p class="note">Skema data <strong>"SimkopDes-compatible"</strong> — hasil e-RAT &amp; keanggotaan dilaporkan balik (PP 7/2021: wajib lapor elektronik). Menyasar Kemudahan Implementasi (15%) + tujuan TOR #5: "berpotensi diimplementasikan dalam ekosistem Kementerian".</p>
   </section>
 
-  <!-- 6 FOKUS DEMO -->
+  <!-- 6 PEMBEDA / BLUE OCEAN -->
   <section class="slide dark">
-    <div class="kicker">Kemudahan Implementasi</div>
-    <h2>Satu alur utuh — bukan super-app.</h2>
-    <p class="lead" style="max-width:64vw">Sprint hacking hanya 24–36 jam. EdigDaya didemokan lewat <strong>satu alur end-to-end</strong>: registrasi terpandu → data tervalidasi tampil di dashboard → 1 rekomendasi AI → laporan fisik siap cetak. Fitur lanjutan (mesin bagi-hasil penuh, Poin Gotong Royong) tampil sebagai roadmap.</p>
-    <div style="margin-top:3vh"><span class="pill">Fokus > cakupan luas</span></div>
+    <div class="kicker">Inovasi — Pembeda yang Tidak Tertolak</div>
+    <h2>Yang belum ada di koperasi mana pun.</h2>
+    <div class="cards">
+      <div class="card"><div class="n">💬</div><h3>WA resmi dua-arah</h3><p>Digi Koperasi Telkom, KDMP.ID, Kospin — semua app-first, tanpa kanal WA anggota. Vendor WA API: nol studi kasus koperasi.</p></div>
+      <div class="card"><div class="n">🗳️</div><h3>e-RAT via WhatsApp</h3><p>Platform e-RAT lain (ratkoperasi.id, KODI) semua web/video. Belum ada yang lewat WA — padahal sah (PP 7/2021).</p></div>
+      <div class="card"><div class="n">💰</div><h3>Estimasi SHU real-time</h3><p>Cek SHU berjalan per anggota dari WA — nol temuan di produk, berita, maupun jurnal.</p></div>
+    </div>
+    <p class="note">Cek saldo via WA sudah komoditas (BRI Sabrina, Mandiri MITA) — kami tak klaim itu. Kekosongan WA resmi koperasi malah diisi penipu (hoaks Kospin Jasa) → kanal terverifikasi = kepercayaan. Fokus 1 alur untuk sprint 24–36 jam; permodalan bagi-hasil = roadmap.</p>
   </section>
 
   <!-- 7 RELEVANSI TEMA -->

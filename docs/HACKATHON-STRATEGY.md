@@ -137,6 +137,25 @@ roadmap** dalam deck, bukan dibangun penuh — konsisten dengan arahan Feasibili
 
 ---
 
+## 3B. Pembeda yang Tidak Tertolak — Blue Ocean WhatsApp-first (riset kompetitor, 7 Juli 2026)
+
+Banyak tim akan membawa "aplikasi anggota" atau "WA chatbot". Riset kompetitor memisahkan **apa yang sudah komoditas vs. yang belum ada di mana pun**, agar pembeda EdigDaya bisa dipertahankan di *live defense*:
+
+- **Sudah komoditas (JANGAN diklaim sebagai inovasi):** cek saldo/mutasi via WA sudah ada di bank besar (BRI Sabrina, Mandiri MITA); notifikasi WA **satu-arah** sudah standar di software koperasi (Koperasiweb, Usaha Koperasi via gateway Fonnte/WhaCenter).
+- **BELUM ADA di koperasi mana pun (white space terverifikasi):**
+  1. **Kanal WhatsApp RESMI dua-arah untuk anggota** yang terintegrasi data inti (simpanan, pinjaman, SHU). Incumbent besar — **Digi Koperasi (Telkom), KDMP.ID, SmartKoperasi, Kospin Jasa — semuanya app-first, tanpa kanal WA anggota**; vendor WA API besar (Qontak, Kata.ai) **nol studi kasus koperasi**.
+  2. **e-RAT / voting via WhatsApp.** Platform e-RAT yang ada (ratkoperasi.id, KODI, Alokop) semuanya **web/video conference** — belum ada yang lewat WA.
+  3. **Estimasi SHU real-time per anggota via WA** — **nol temuan** di produk, berita, maupun jurnal.
+- **Amunisi keamanan (argumen kuat ke juri):** kekosongan kanal WA resmi koperasi justru diisi **penipu** (hoaks pinjol mengatasnamakan Kospin Jasa, diklarifikasi Kominfo). Kanal WA **terverifikasi Meta** = kebutuhan kepercayaan, bukan sekadar fitur.
+- **Kenapa WA, bukan app:** 80.081 Kopdes Merah Putih baru terbentuk (2025), anggota desa rata-rata **usia 55 th** lebih akrab WhatsApp daripada aplikasi → EdigDaya menjumpai mereka di kanal yang sudah dipakai tiap hari (selaras arahan mentor "L0", bukan memaksa unduh app).
+
+**Rumusan pembeda 1 kalimat (untuk pitch & live defense):**
+> *"EdigDaya adalah kanal keterlibatan koperasi WhatsApp-first pertama yang resmi & terverifikasi — anggota desa bisa cek estimasi SHU real-time dan ikut voting e-RAT yang sah langsung dari WhatsApp; yang tanpa gawai tetap terjangkau lewat laporan fisik papan desa."*
+
+⚠️ **Batasan jujur:** verifikasi WhatsApp Business API resmi butuh proses (tak selesai dalam sprint 24–36 jam). Untuk demo pakai **Cloud API test number / Twilio sandbox**; posisikan "resmi & terverifikasi" sebagai desain produksi, bukan klaim status saat demo. Hindari WA unofficial (risiko akun diblokir).
+
+---
+
 ## 4. Model Bisnis & Dampak (Business & Impact Model — blok wajib TOR)
 
 Mengikuti 3 lensa penilaian model bisnis (Dina Dellyana, SBM ITB): **Desirability, Feasibility,
@@ -220,6 +239,43 @@ relevan untuk validasi rekomendasi tanam.
 - Validasi & sanitasi seluruh input form (cegah injection); rate-limit endpoint publik.
 - Retensi minimal untuk foto verifikasi — hanya disimpan selama diperlukan proses validasi.
 - Persetujuan eksplisit (consent) pengguna sebelum verifikasi foto KTP/wajah, sesuai prinsip UU PDP.
+
+---
+
+## 6B. Integrasi Ekosistem SimkopDes (nyambung, bukan silo)
+
+TOR tujuan #5: solusi harus *"berpotensi diimplementasikan dalam ekosistem Kementerian Koperasi."*
+Bagian **K. Referensi Link Database** di TOR memberi enam tautan yang membocorkan **domain data yang
+sudah dibangun SimkopDes**. EdigDaya diposisikan sebagai **lapisan keterlibatan _last-mile_
+(WhatsApp-first) DI ATAS ekosistem data SimkopDes** — membaca data acuan dan menulis balik hasil dalam
+skema yang kompatibel, **bukan sistem terpisah**. Ini yang membuat solusi "nyambung" & menaikkan skor
+**Kemudahan Implementasi (15%)**.
+
+| Domain SimkopDes (link TOR) | Isi (perkiraan dari struktur URL) | Modul EdigDaya yang nyambung |
+|---|---|---|
+| `simkopdes.go.id/pers/kelembagaan` | data kelembagaan & keanggotaan koperasi | **Registrasi terpandu** → sinkron profil koperasi & anggota |
+| `simkopdes.go.id/pers/transaksi/bisnis` | transaksi usaha koperasi | **Dashboard transparansi** + dasar hitung *jasa usaha* (SHU) |
+| `simkopdes.go.id/pers/rat` | data & agenda RAT | Modul **e-RAT / voting WA** → hasil & berita acara dilaporkan balik (PP 7/2021: wajib lapor elektronik) |
+| `simkopdes.go.id/pers/ews/kesehatan-keuangan` | *early-warning* kesehatan keuangan | Indikator **kesehatan koperasi** di dashboard — penguat transparansi/kepercayaan |
+| `simkopdes.go.id/pers/dashboard` | dashboard agregat | EdigDaya sbg pengumpan data lapangan → tampil di dashboard nasional |
+| `s.simkopdes.go.id/database-hackaton` | folder dataset hackathon (Google Drive "Aset Database") | sumber *seed data* demo — **terverifikasi masih KOSONG 7 Juli 2026** |
+
+**Prinsip integrasi (aman diklaim ke juri):**
+- Rancang skema data EdigDaya **"SimkopDes-compatible"** (nama entitas & field mengacu domain di atas) +
+  *endpoint adapter*, dijelaskan di `README`/arsitektur. Ini menyasar **Kemudahan Implementasi (15%)** +
+  tujuan TOR #5 secara langsung — pembeda yang jarang dipikirkan tim lain (yang cenderung bikin app silo).
+- **JANGAN klaim "integrasi live"** sebelum bentuk endpoint diverifikasi. ⚠️ Endpoint `/pers/*` **tidak
+  bisa diakses dari lingkungan riset (egress diblokir) dan kemungkinan halaman berlogin, bukan REST API
+  terbuka**. Tim wajib membuka dari browser saat sprint; jika tak ada API publik, posisikan sebagai
+  **"kesiapan integrasi + skema kompatibel"** (tetap bernilai penuh) dan pakai folder Drive begitu diisi.
+- **Landasan hukum fitur unggulan** (biar tak tertolak juri Kemenkop):
+  - *e-RAT sah*: UU 25/1992 (Ps. 22, 26) jo. UU 6/2023; **PP 7/2021 Ps. 8** (rapat anggota daring +
+    **wajib lapor hasil elektronik** ke Kemenkop/Dinas); Permenkop 19/2015 (media elektronik). Argumen
+    bisnis: RAT wajib ≤6 bln setelah tutup buku; tidak RAT 3 tahun → bisa **dibubarkan** (Permenkop
+    9/2018 Ps. 43) → EdigDaya bantu koperasi patuh.
+  - *SHU per anggota*: **UU 25/1992 Ps. 45** = jasa modal (proporsi simpanan) + jasa usaha (proporsi
+    transaksi); persen alokasi **configurable per AD/ART**, angka final menunggu keputusan RAT →
+    selalu tampilkan sebagai **"estimasi SHU berjalan"**, bukan angka final.
 
 ---
 
