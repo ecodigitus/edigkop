@@ -279,6 +279,43 @@ skema yang kompatibel, **bukan sistem terpisah**. Ini yang membuat solusi "nyamb
 
 ---
 
+## 6C. Dataset Resmi Hackathon SimkopDes — Kamus Data (buat apa & pemetaan)
+
+**Apa ini:** panitia membagikan **metadata/kamus data dataset SimkopDes** (`metadata_database_hackathon_final.xlsx`)
+— **27 tabel relasional, 282 field**, berisi data koperasi **NYATA yang dianonimkan** (NIK disamarkan
+`32********01`, koordinat dibulatkan → sudah taat privasi/UU PDP). Semua tabel tersambung lewat kunci
+**`koperasi_ref`** (mis. `KOP-539EF09CDAAD`) ke `profil_koperasi`.
+
+**Buat apa (kenapa penting):**
+1. **Bangun MVP di atas data nyata, bukan dummy** → langsung menaikkan Relevansi (25%), Dampak (20%),
+   Kemudahan Implementasi (15%). Inilah "solusi nyata" yang dicari juri.
+2. **Skema kanonik SimkopDes** → tiru nama tabel/field-nya agar EdigDaya benar-benar *SimkopDes-compatible*
+   (nyambung ekosistem, bukan silo).
+3. **Sumber "cerita data"** untuk pitch & live defense (framing masalah pakai angka, bukan fitur).
+
+**Pemetaan modul EdigDaya → tabel dataset nyata:**
+
+| Modul EdigDaya | Tabel SimkopDes (dataset) | Field kunci |
+|---|---|---|
+| Keanggotaan inklusif (WA) | `anggota_koperasi` | **`status_akun`** (Punya Akun / **Tidak Punya Akun**), `status_keanggotaan` (Approved/Requested), `tanggal_terdaftar`, `pekerjaan`, `jenis_kelamin`, `kode_wilayah` |
+| Estimasi SHU & transparansi | `simpanan_anggota` (jasa modal) + `transaksi_penjualan`/`barang_keluar_produk` (jasa usaha) | `jumlah_simpanan`, `total_pembayaran`, `total_nilai` |
+| e-RAT / suara anggota | `rat_koperasi` | `tanggal_rat`, `status_rat`, `tahap_rat`, **`jumlah_peserta_rat`**, `urutan_rat`, `laporan_hasil_usaha` |
+| Analitik pengurus (segmentasi) | `anggota_koperasi` + `referensi_profil_desa` + `referensi_wilayah` | `total_penduduk`, `kode_wilayah`, demografi |
+| Kesehatan koperasi | `profil_koperasi` + `modal_koperasi` + `akun_bank_koperasi` | `status_registrasi`, `modal_awal`, `tipe_modal` |
+| (roadmap) usaha/gerai | `gerai_koperasi`, `produk_koperasi`, `inventaris_produk`, `barang_masuk_produk` | — |
+
+**💡 Cerita data pemenang (pakai di slide Problem & live defense) — dua bukti langsung dari data panitia:**
+1. field **`anggota_koperasi.status_akun = "Tidak Punya Akun"`** membuktikan banyak anggota **terdaftar tapi
+   belum punya akun digital** → itulah *gap keterlibatan* yang EdigDaya tutup lewat WhatsApp.
+2. **`rat_koperasi.jumlah_peserta_rat`** yang rendah membuktikan partisipasi RAT lemah → dijawab e-RAT via WA.
+
+Tunjukkan **angka aktual dari dataset** saat sprint (bukan asumsi). Rancang tabel EdigDaya memakai nama &
+relasi yang sama (`koperasi_ref`, `anggota_ref`, dst) supaya klaim "SimkopDes-compatible" kredibel di README.
+Catatan: file *metadata* (skema) sudah di tangan; **berkas data tabel (CSV/dump) dikonfirmasi via folder
+"Aset Database"** — cek berkala, siapkan sampel dummy bila belum tersedia saat sprint.
+
+---
+
 ## 7. Kepatuhan Deliverables (checklist sebelum submit ke portal SIMKOPDES)
 
 - [ ] **Repo publik** (GitHub) dengan `README.md`: cara instalasi/menjalankan + penjelasan arsitektur.
