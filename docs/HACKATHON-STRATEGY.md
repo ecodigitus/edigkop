@@ -387,6 +387,8 @@ Angka aktual dari dataset sudah tersedia di **§2.2** (76,3% tanpa akun digital,
 
 ## 7. Kepatuhan Deliverables (checklist sebelum submit ke portal SIMKOPDES)
 
+- [x] **Scaffold MVP** (`webapp/`) — Next.js 14 + PostgreSQL, alur Registrasi → Dashboard → e-RAT →
+      Laporan Fisik jalan (build & smoke-test lolos). Lihat `webapp/README.md`.
 - [ ] **Repo publik** (GitHub) dengan `README.md`: cara instalasi/menjalankan + penjelasan arsitektur.
 - [ ] **Pitch Deck PDF, 10–12 slide**, memuat 4 blok wajib: Problem Statement · Solution & Architecture ·
       Business & Impact Model · Team Profile. (Lihat `deck/index.html` — export ke PDF sebelum submit.)
