@@ -1,6 +1,7 @@
 import makeWASocket, {
   useMultiFileAuthState,
   fetchLatestBaileysVersion,
+  downloadMediaMessage,
   DisconnectReason,
   type WASocket,
   type proto,
@@ -10,14 +11,17 @@ import qrcode from 'qrcode-terminal';
 import { config } from './config';
 import { logger, waLogger, maskJid } from './logger';
 import { allowed, setAiMode } from './session';
-import { cancelActivation } from './activation';
+import { cancelActivation, startActivationFromKtp } from './activation';
+import { extractKtp, ktpEnabled } from './ktp';
 import { cancelPeriksa } from './periksaaktivasi';
 import { cancelLaporan } from './laporan';
 import { cancelPoForm, drainOutbox, handleAdminPo } from './preorder';
+import { cancelSetor } from './simpanan';
 import { route } from './router';
-import { getMember } from './members';
+import { getMember, isMember } from './members';
 import { startVoteFor, startNudgeFor } from './campaigns';
 import { drainNotifs } from './notifications';
+import { transcribeOggOpus, sttEnabled } from './voice';
 import { welcomeCaption } from './welcome';
 
 // Perintah yang memicu welcome card (logo + caption + pilihan).
@@ -130,7 +134,73 @@ async function handleMessage(sock: WASocket, msg: proto.IWebMessageInfo): Promis
   const isGroup = jid.endsWith('@g.us');
   if (isGroup && !config.wa.handleGroups) return;
 
-  const text = extractText(msg).trim();
+  let text = extractText(msg).trim();
+  let viaVoice = false;
+
+  // Voice note (PTT) → transkrip ke teks via GCP Speech-to-Text (inklusi desa:
+  // anggota bisa "ngomong" alih-alih mengetik). OGG/Opus dikirim langsung.
+  if (!text && msg.message?.audioMessage) {
+    if (!sttEnabled) {
+      await sock.sendMessage(jid, {
+        text: '🎤 Maaf, fitur pesan suara belum aktif 🙏. Ketik pesan *teks* ya, atau ketik *mulai*.',
+      });
+      return;
+    }
+    try {
+      const buf = (await downloadMediaMessage(
+        msg as Parameters<typeof downloadMediaMessage>[0],
+        'buffer',
+        {},
+        { logger: waLogger, reuploadRequest: sock.updateMediaMessage },
+      )) as Buffer;
+      const transcript = await transcribeOggOpus(buf);
+      if (transcript) {
+        text = transcript;
+        viaVoice = true;
+      }
+    } catch (err) {
+      logger.warn({ err, jid: maskJid(jid) }, 'Gagal memproses voice note');
+    }
+    if (!text) {
+      await sock.sendMessage(jid, {
+        text: '🎤 Maaf, suaranya kurang jelas 🙏. Coba ulangi, atau ketik pesannya ya.',
+      });
+      return;
+    }
+  }
+
+  // Foto KTP (khusus CALON anggota) → OCR isi otomatis data pendaftaran.
+  if (!text && msg.message?.imageMessage) {
+    if (isMember(jid)) {
+      await sock.sendMessage(jid, { text: 'Kirim pesan *teks* ya untuk perintah. Ketik *menu* untuk pilihan. 🙂' });
+      return;
+    }
+    if (!ktpEnabled) {
+      await sock.sendMessage(jid, { text: '📷 Fitur foto KTP belum aktif. Ketik *aktivasi* untuk daftar manual ya. 🙌' });
+      return;
+    }
+    try {
+      const buf = (await downloadMediaMessage(
+        msg as Parameters<typeof downloadMediaMessage>[0],
+        'buffer',
+        {},
+        { logger: waLogger, reuploadRequest: sock.updateMediaMessage },
+      )) as Buffer;
+      const ktp = await extractKtp(buf);
+      // Cukup salah satu (nik ATAU nama) kebaca → mulai; sisanya diisi di form.
+      if (ktp && (ktp.nik || ktp.nama)) {
+        await sock.sendMessage(jid, { text: startActivationFromKtp(jid, ktp) });
+        logger.info({ jid: maskJid(jid) }, 'Aktivasi via KTP dimulai');
+        return;
+      }
+    } catch (err) {
+      logger.warn({ err, jid: maskJid(jid) }, 'Gagal OCR KTP');
+    }
+    await sock.sendMessage(jid, {
+      text: '📷 Maaf, KTP-nya kurang kebaca 🙏. Coba foto lebih jelas (terang & fokus, NIK kelihatan), atau ketik *aktivasi* untuk isi manual.',
+    });
+    return;
+  }
 
   // Validasi input (OWASP: jangan proses input tak wajar)
   if (!text) {
@@ -169,6 +239,7 @@ async function handleMessage(sock: WASocket, msg: proto.IWebMessageInfo): Promis
     cancelActivation(jid); // reset: batalkan form aktivasi yang sedang berjalan
     cancelPeriksa(jid); // reset: batalkan alur Periksa Aktivasi yang sedang berjalan
     cancelLaporan(jid); // reset: batalkan form laporan (menu 13) yang sedang berjalan
+    cancelSetor(jid); // reset: batalkan alur setor simpanan yang sedang berjalan
     cancelPoForm(jid); // reset: batalkan form Pre-Order yang sedang berjalan
     await sendWelcomeCard(sock, jid);
     logger.info({ jid: maskJid(jid) }, 'Welcome card terkirim');
@@ -190,7 +261,9 @@ async function handleMessage(sock: WASocket, msg: proto.IWebMessageInfo): Promis
     /* non-fatal */
   }
 
-  await sock.sendMessage(jid, { text: reply });
+  // Kalau input lewat suara, echo hasil transkrip dulu biar user tahu yang bot dengar.
+  const out = viaVoice ? `🎤 _"${text}"_\n\n${reply}` : reply;
+  await sock.sendMessage(jid, { text: out });
   await flushOutbox(sock); // kirim notifikasi PO (mis. ke admin saat PO baru dibuat)
   logger.info({ jid: maskJid(jid) }, 'Balasan terkirim');
 }

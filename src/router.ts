@@ -12,6 +12,7 @@ import { pengurusView } from './pengurus';
 import { pengumumanView } from './pengumuman';
 import { inLaporan, startLaporan, handleLaporan, listLaporan, cancelLaporan } from './laporan';
 import { koperasiGlobalView } from './koperasiglobal';
+import { handleIntent } from './intent';
 import { handleNotifDemo } from './notifications';
 import { handleCampaignReply, matchTrigger } from './campaigns';
 import { config, aiEnabled, activeKeyEnv } from './config';
@@ -219,6 +220,12 @@ export async function route(jid: string, text: string): Promise<string> {
   if (!aiEnabled) {
     return 'Untuk pertanyaan lain, ketik *menu* untuk pilihan, atau *pengurus* untuk terhubung dengan pengurus koperasi. 🙏';
   }
+
+  // I2) INTENT LAYER: pahami kalimat bebas (teks/voice) → jalankan aksi menu yang
+  //     sesuai (mis. "mau setor sukarela 500rb" → langsung ke konfirmasi setor).
+  //     Null bila tak ada aksi jelas → lanjut ke ngobrol AI biasa.
+  const acted = await handleIntent(jid, member, text);
+  if (acted !== null) return acted;
 
   // J) Fallback ke AI — sudah tahu konteks koperasi + data anggota
   return chatWithAssistant(jid, text, member);

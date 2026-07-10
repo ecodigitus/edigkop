@@ -18,9 +18,11 @@ import { rupiah } from './format';
 import { submitActivation, type ActivationPayload } from './simkopdes';
 import { listProvinsi, listKabupaten, listKecamatan, listDesa, listKoperasi } from './wilayah';
 import { isValidCode, ownerName, creditReferral, POIN_PER_AJAKAN } from './referral';
+import { ktpEnabled, type KtpData } from './ktp';
 
 type Step =
   | 'mode'
+  | 'ktp_review'
   | 'refopt'
   | 'refcode'
   | 'nama'
@@ -52,6 +54,7 @@ type Draft = {
   koperasi?: string;
   setujuDomisili?: boolean;
   setujuPdp?: boolean;
+  ktp?: KtpData; // hasil scan KTP (untuk direview/dikoreksi sebelum lanjut)
 };
 
 const drafts = new Map<string, Draft>();
@@ -86,8 +89,58 @@ export function startActivationMenu(jid: string): string {
     `Ketik *batal* kapan saja untuk berhenti.\n\n` +
     `Mau aktivasi yang mana? (balas angka)\n` +
     `1. ⚡ *Aktivasi kilat* _(demo — langsung jadi, pakai data contoh)_\n` +
-    `2. 📝 *Isi form lengkap* _(12 langkah, isi data sendiri)_`
+    `2. 📝 *Isi form lengkap* _(12 langkah, isi data sendiri)_` +
+    (ktpEnabled ? `\n\n📷 _Atau langsung kirim *foto KTP*-mu — nama, NIK, & data pribadi kuisi otomatis._` : '')
   );
+}
+
+/**
+ * Aktivasi via FOTO KTP (OCR): prefill nama/NIK/jenis kelamin dari hasil OCR,
+ * lalu lanjutkan form dari langkah email (atau jenis kelamin bila tak terbaca).
+ * Sisa data (email, HP, wilayah, koperasi, persetujuan) tetap diisi seperti biasa.
+ */
+// Urutan field KTP untuk ditampilkan & dikoreksi (nomor 1..N di review).
+const KTP_FIELDS: { key: keyof KtpData; label: string }[] = [
+  { key: 'nik', label: 'NIK' },
+  { key: 'nama', label: 'Nama' },
+  { key: 'tempatTglLahir', label: 'Tempat/Tgl Lahir' },
+  { key: 'jenisKelamin', label: 'Jenis Kelamin' },
+  { key: 'golDarah', label: 'Gol. Darah' },
+  { key: 'alamat', label: 'Alamat' },
+  { key: 'rtRw', label: 'RT/RW' },
+  { key: 'kelDesa', label: 'Kel/Desa' },
+  { key: 'kecamatan', label: 'Kecamatan' },
+  { key: 'agama', label: 'Agama' },
+  { key: 'statusPerkawinan', label: 'Status Perkawinan' },
+  { key: 'pekerjaan', label: 'Pekerjaan' },
+  { key: 'kewarganegaraan', label: 'Kewarganegaraan' },
+  { key: 'berlakuHingga', label: 'Berlaku Hingga' },
+];
+
+/** Ringkasan hasil OCR KTP untuk direview/dikoreksi user. */
+function ktpSummary(k: KtpData): string {
+  const rows = KTP_FIELDS.map((f, i) => `*${i + 1}.* ${f.label}: ${k[f.key] ?? '-'}`).join('\n');
+  return (
+    `📷 *Hasil baca KTP* — cek dulu ya, OCR kadang salah 🙏\n\n` +
+    `${rows}\n\n` +
+    `✅ Kalau sudah *benar semua*, balas *ya*.\n` +
+    `✏️ Ada yang salah? Ketik *nomor + nilai benar*, mis. *2 Mira Setiawan* atau *6 Jl. Mawar No.5*.\n` +
+    `_Ketik *aktivasi manual* untuk isi ulang dari awal. Foto KTP tidak disimpan (UU PDP)._`
+  );
+}
+
+/** Prompt untuk langkah lanjutan setelah review KTP. */
+function promptFor(st: 'nama' | 'nik' | 'jk' | 'email'): string {
+  if (st === 'nama') return step(1, 'Siapa *nama lengkap* kamu?');
+  if (st === 'nik') return step(2, 'Nomor Induk Kependudukan (*NIK*)? _(16 digit angka)_');
+  if (st === 'jk') return step(3, `Pilih *jenis kelamin* (balas angka):\n${renderChoices(JK)}`);
+  return step(4, 'Lanjut — alamat *email* kamu?');
+}
+
+/** Mulai aktivasi via KTP: tampilkan hasil OCR untuk direview/dikoreksi dulu. */
+export function startActivationFromKtp(jid: string, ktp: KtpData): string {
+  drafts.set(jid, { step: 'ktp_review', ktp });
+  return ktpSummary(ktp);
 }
 
 /** Mulai form aktivasi — mulai dari pilihan cara daftar (pribadi / referral). */
@@ -176,6 +229,41 @@ export async function handleActivation(jid: string, text: string): Promise<strin
   }
 
   switch (d.step) {
+    case 'ktp_review': {
+      const k: KtpData = d.ktp ?? {};
+      if (['aktivasi manual', 'manual', 'isi manual', 'ulang'].includes(low)) {
+        return startActivation(jid);
+      }
+      if (['ya', 'iya', 'benar', 'betul', 'ok', 'oke', 'lanjut', 'bener', 'sudah'].includes(low)) {
+        d.namaLengkap = k.nama;
+        d.nik = k.nik && /^\d{16}$/.test(k.nik) ? k.nik : undefined;
+        d.jenisKelamin = k.jenisKelamin && JK.includes(k.jenisKelamin) ? k.jenisKelamin : undefined;
+        const nextStep: 'nama' | 'nik' | 'jk' | 'email' = !d.namaLengkap
+          ? 'nama'
+          : !d.nik
+            ? 'nik'
+            : !d.jenisKelamin
+              ? 'jk'
+              : 'email';
+        d.step = nextStep;
+        return `👍 Sip, data KTP disimpan.\n\n` + promptFor(nextStep);
+      }
+      // Koreksi per-field: "N nilai" (mis. "2 Mira Setiawan").
+      const mm = raw.match(/^(\d{1,2})\s+(.+)$/);
+      if (mm) {
+        const idx = Number(mm[1]) - 1;
+        if (idx < 0 || idx >= KTP_FIELDS.length) return err('Nomor field nggak valid. Contoh: *2 Mira Setiawan*.');
+        const field = KTP_FIELDS[idx]!;
+        let val = mm[2]!.trim();
+        if (field.key === 'nik') val = val.replace(/\D/g, '');
+        if (field.key === 'jenisKelamin') {
+          val = /perempuan|^p$/i.test(val) ? 'Perempuan' : /laki|^l$/i.test(val) ? 'Laki-laki' : val;
+        }
+        d.ktp = { ...k, [field.key]: val };
+        return `✏️ *${field.label}* diperbarui → *${val}*\n\n` + ktpSummary(d.ktp);
+      }
+      return `Balas *ya* kalau data sudah benar, ketik *nomor + nilai* untuk koreksi (mis. *2 Mira Setiawan*), atau *aktivasi manual* untuk isi dari awal.`;
+    }
     case 'mode': {
       const v = parseChoice(raw, ['Aktivasi kilat', 'Isi form lengkap']);
       if (!v) return err('Pilih *1* (aktivasi kilat) atau *2* (isi form lengkap).');
@@ -348,6 +436,21 @@ async function finish(jid: string, d: Draft): Promise<string> {
     kecamatan: d.kecamatan,
     desa: d.desa,
     koperasi: d.koperasi,
+    ktp: d.ktp
+      ? {
+          tempatTglLahir: d.ktp.tempatTglLahir,
+          golDarah: d.ktp.golDarah,
+          alamat: d.ktp.alamat,
+          rtRw: d.ktp.rtRw,
+          kelDesa: d.ktp.kelDesa,
+          kecamatan: d.ktp.kecamatan,
+          agama: d.ktp.agama,
+          statusPerkawinan: d.ktp.statusPerkawinan,
+          pekerjaan: d.ktp.pekerjaan,
+          kewarganegaraan: d.ktp.kewarganegaraan,
+          berlakuHingga: d.ktp.berlakuHingga,
+        }
+      : undefined,
   });
   activateMember(jid, profile);
   drafts.delete(jid);

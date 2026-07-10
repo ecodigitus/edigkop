@@ -6,6 +6,7 @@ import { totalSimpanan, type Member } from './members';
 import type { ChatMessage } from './session';
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 const REQUEST_TIMEOUT_MS = 20_000;
 
 /** Client Anthropic dibuat sekali; null kalau provider bukan anthropic / AI mati. */
@@ -81,9 +82,25 @@ export async function generateReply(
   const text =
     config.ai.provider === 'anthropic'
       ? await callAnthropic(system, messages)
-      : await callGroq(system, messages);
+      : config.ai.provider === 'gemini'
+        ? await callGemini(system, messages)
+        : await callGroq(system, messages);
 
   return text.trim() || FALLBACK_REPLY;
+}
+
+/**
+ * Panggil LLM SEKALI dengan system prompt + 1 pesan user, kembalikan teks mentah.
+ * Dipakai intent classifier (bukan percakapan) — tanpa riwayat & persona koperasi.
+ */
+export async function completeRaw(system: string, userText: string): Promise<string> {
+  if (!aiEnabled) throw new Error('AI tidak aktif.');
+  const messages: ChatMessage[] = [{ role: 'user', content: userText }];
+  return config.ai.provider === 'anthropic'
+    ? callAnthropic(system, messages)
+    : config.ai.provider === 'gemini'
+      ? callGemini(system, messages)
+      : callGroq(system, messages);
 }
 
 /** Panggil Claude (Anthropic). */
@@ -96,6 +113,44 @@ async function callAnthropic(system: string, messages: ChatMessage[]): Promise<s
     messages,
   });
   return resp.content.map((block) => (block.type === 'text' ? block.text : '')).join('');
+}
+
+/**
+ * Panggil Gemini (Google, GCP) lewat REST generativelanguage — pakai API key,
+ * tanpa dependency tambahan. Role 'assistant' dipetakan ke 'model' (format Gemini);
+ * system prompt lewat systemInstruction. Timeout via AbortController.
+ */
+async function callGemini(system: string, messages: ChatMessage[]): Promise<string> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    const url = `${GEMINI_URL}/${config.gemini.model}:generateContent?key=${encodeURIComponent(config.gemini.apiKey)}`;
+    const contents = messages.map((m) => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }],
+    }));
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: system }] },
+        contents,
+        generationConfig: { maxOutputTokens: config.gemini.maxTokens, temperature: 0.5 },
+      }),
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      const detail = await res.text().catch(() => '');
+      throw new Error(`Gemini API ${res.status}: ${detail.slice(0, 200)}`);
+    }
+
+    const data = (await res.json()) as {
+      candidates?: { content?: { parts?: { text?: string }[] } }[] };
+    return (data.candidates?.[0]?.content?.parts ?? []).map((p) => p.text ?? '').join('');
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /**

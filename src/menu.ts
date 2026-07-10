@@ -118,13 +118,22 @@ function informasiSaya(m: Member): string {
   let dataPribadi = '';
   if (p) {
     const alamat = [p.desa, p.kecamatan, p.kabupaten, p.provinsi].filter(Boolean).join(', ');
+    const k = p.ktp;
     dataPribadi =
       `*— Data Pribadi —*\n` +
       (p.nik ? `• NIK: ${maskNik(p.nik)}\n` : '') +
       (p.jenisKelamin ? `• Jenis kelamin: ${p.jenisKelamin}\n` : '') +
+      (k?.tempatTglLahir ? `• Tempat/Tgl Lahir: ${k.tempatTglLahir}\n` : '') +
+      (k?.golDarah ? `• Gol. Darah: ${k.golDarah}\n` : '') +
       (p.email ? `• Email: ${p.email}\n` : '') +
       (p.nomorHp ? `• No. HP: ${p.nomorHp}\n` : '') +
-      (alamat ? `• Wilayah: ${alamat}\n` : '') +
+      (k?.alamat ? `• Alamat KTP: ${k.alamat}${k.rtRw ? ` RT/RW ${k.rtRw}` : ''}\n` : '') +
+      (k?.kelDesa ? `• Kel/Desa: ${k.kelDesa}\n` : '') +
+      (k?.agama ? `• Agama: ${k.agama}\n` : '') +
+      (k?.statusPerkawinan ? `• Status Perkawinan: ${k.statusPerkawinan}\n` : '') +
+      (k?.pekerjaan ? `• Pekerjaan: ${k.pekerjaan}\n` : '') +
+      (k?.kewarganegaraan ? `• Kewarganegaraan: ${k.kewarganegaraan}\n` : '') +
+      (alamat ? `• Wilayah koperasi: ${alamat}\n` : '') +
       `\n`;
   }
 

@@ -70,6 +70,21 @@ export async function insertRow(table: string, row: Record<string, unknown>): Pr
 }
 
 /**
+ * Lepaskan `phone` dari anggota LAIN (set null) — kolom phone UNIQUE, jadi saat
+ * satu nomor WA mendaftar sebagai anggota baru (mis. demo ulang di HP yang sama)
+ * nomor "dipindahkan" ke anggota baru tanpa bentrok. Non-destruktif (unlink saja).
+ */
+export async function unlinkPhone(phone: string, exceptNoAnggota: string): Promise<void> {
+  if (!client) return;
+  const { error } = await client
+    .from('members')
+    .update({ phone: null })
+    .eq('phone', phone)
+    .neq('no_anggota', exceptNoAnggota);
+  if (error) logger.error({ err: error.message }, 'Supabase unlinkPhone gagal');
+}
+
+/**
  * Upsert satu baris. Dipanggil fire-and-forget (pemanggil tak perlu await) —
  * error hanya di-log, tak pernah menggagalkan alur bot. No-op bila DB nonaktif.
  */

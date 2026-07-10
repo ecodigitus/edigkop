@@ -19,10 +19,11 @@ function list(name: string): string[] {
     .filter(Boolean);
 }
 
-// Penyedia AI aktif: 'groq' (default) atau 'anthropic'. Keduanya didukung;
-// tinggal ganti AI_PROVIDER + isi API key yang sesuai di .env.
-const aiProvider: 'groq' | 'anthropic' =
-  process.env.AI_PROVIDER?.trim().toLowerCase() === 'anthropic' ? 'anthropic' : 'groq';
+// Penyedia AI aktif: 'groq' (default), 'anthropic' (Claude), atau 'gemini' (GCP).
+// Ganti AI_PROVIDER + isi API key yang sesuai di .env.
+const aiProviderRaw = process.env.AI_PROVIDER?.trim().toLowerCase();
+const aiProvider: 'groq' | 'anthropic' | 'gemini' =
+  aiProviderRaw === 'anthropic' ? 'anthropic' : aiProviderRaw === 'gemini' ? 'gemini' : 'groq';
 
 export const config = {
   ai: {
@@ -39,6 +40,13 @@ export const config = {
     model: process.env.ANTHROPIC_MODEL?.trim() || 'claude-opus-4-8',
     maxTokens: num('ANTHROPIC_MAX_TOKENS', 1024),
   },
+  gemini: {
+    // LLM Google (GCP). Pakai API key "Generative Language API" — bill ke project
+    // GCP (memakai credit). KOSONG = provider gemini nonaktif.
+    apiKey: process.env.GEMINI_API_KEY?.trim() ?? '',
+    model: process.env.GEMINI_MODEL?.trim() || 'gemini-2.0-flash',
+    maxTokens: num('GEMINI_MAX_TOKENS', 1024),
+  },
   supabase: {
     // DB bersama bot + dashboard. KOSONG = bot pakai data dummy in-memory (fallback).
     url: process.env.SUPABASE_URL?.trim() ?? '',
@@ -49,6 +57,16 @@ export const config = {
     // Endpoint API pendaftaran SIMKOPDES. KOSONG = pakai adapter dummy (in-memory).
     apiUrl: process.env.SIMKOPDES_API_URL?.trim() ?? '',
     apiKey: process.env.SIMKOPDES_API_KEY?.trim() ?? '',
+  },
+  gcp: {
+    // API key Google Cloud Speech-to-Text (untuk transkrip voice note WA).
+    // KOSONG = fitur voice note nonaktif (bot minta pesan teks). Aktifkan: enable
+    // "Cloud Speech-to-Text API" di GCP + buat API key (batasi ke Speech API saja).
+    sttApiKey: process.env.GCP_STT_API_KEY?.trim() ?? '',
+    // Bahasa transkrip utama (BCP-47). Default Indonesia.
+    sttLang: process.env.GCP_STT_LANG?.trim() || 'id-ID',
+    // API key Cloud Vision (OCR KTP saat pendaftaran). KOSONG = fitur KTP nonaktif.
+    visionApiKey: process.env.GCP_VISION_API_KEY?.trim() ?? '',
   },
   hackathonDb: {
     // DB global panitia hackathon — dipakai HANYA untuk SELECT (read-only).
@@ -85,11 +103,22 @@ export const config = {
 export const aiEnabled =
   config.ai.provider === 'anthropic'
     ? config.anthropic.apiKey.length > 0
-    : config.groq.apiKey.length > 0;
+    : config.ai.provider === 'gemini'
+      ? config.gemini.apiKey.length > 0
+      : config.groq.apiKey.length > 0;
 
 /** Nama model provider yang sedang aktif (untuk logging/diagnostik). */
 export const activeModel =
-  config.ai.provider === 'anthropic' ? config.anthropic.model : config.groq.model;
+  config.ai.provider === 'anthropic'
+    ? config.anthropic.model
+    : config.ai.provider === 'gemini'
+      ? config.gemini.model
+      : config.groq.model;
 
 /** Nama env var API key yang perlu diisi untuk provider aktif (untuk pesan bantuan). */
-export const activeKeyEnv = config.ai.provider === 'anthropic' ? 'ANTHROPIC_API_KEY' : 'GROQ_API_KEY';
+export const activeKeyEnv =
+  config.ai.provider === 'anthropic'
+    ? 'ANTHROPIC_API_KEY'
+    : config.ai.provider === 'gemini'
+      ? 'GEMINI_API_KEY'
+      : 'GROQ_API_KEY';

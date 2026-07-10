@@ -34,7 +34,8 @@ const POIN_SETOR = 25;
 type Draft = { step: 'pilih' | 'nominal' | 'bayar'; jenis?: JenisSimpanan; nominal?: number; va?: string };
 const drafts = new Map<string, Draft>();
 
-const CANCEL = ['batal', 'keluar', 'menu', 'stop', 'cancel'];
+// Kata "keluar" dari alur setor — termasuk sapaan/mulai biar user gak kejebak.
+const CANCEL = ['batal', 'keluar', 'menu', 'stop', 'cancel', 'mulai', 'start', 'halo', 'hai', 'hi', 'p'];
 const CONFIRM = ['sudah bayar', 'sudah', 'bayar', 'konfirmasi', 'konfirm', 'ok', 'oke', 'selesai', 'ya', 'done', 'lunas'];
 
 /** True jika simpanan pokok sudah lunas (≥ nominal pokok koperasi). */
@@ -54,21 +55,34 @@ export function inSetor(jid: string): boolean {
   return drafts.has(jid);
 }
 
+/** Batalkan alur setor yang sedang berjalan (mis. saat user ketik "mulai"). */
+export function cancelSetor(jid: string): void {
+  drafts.delete(jid);
+}
+
 /**
  * Mulai alur setor. Tanpa `jenis` → tampilkan pemilih; dengan `jenis` →
- * langsung ke instruksi bayar (sukarela minta nominal dulu).
+ * langsung ke instruksi bayar. Untuk SUKARELA, bila `nominal` valid diberikan
+ * (mis. dari intent "setor sukarela 500rb") → langsung ke konfirmasi bayar;
+ * kalau tidak → minta nominal dulu. Nominal wajib/pokok selalu server-side.
  */
-export function startSetor(jid: string, m: Member, jenis?: JenisSimpanan): string {
+export function startSetor(jid: string, m: Member, jenis?: JenisSimpanan, nominal?: number): string {
   if (!jenis) {
     drafts.set(jid, { step: 'pilih' });
     return chooser(m);
   }
   if (jenis === 'sukarela') {
+    if (nominal != null && nominal >= SUKARELA_MIN && nominal <= SUKARELA_MAX) {
+      return toBayar(jid, m, 'sukarela', nominal);
+    }
     drafts.set(jid, { step: 'nominal', jenis });
     return askNominal();
   }
-  const nominal = jenis === 'pokok' ? koperasi.simpanan.pokok : koperasi.simpanan.wajib;
-  return toBayar(jid, m, jenis, nominal);
+  if (jenis === 'pokok' && pokokLunas(m)) {
+    return '✅ Simpanan pokok kamu sudah lunas kok. Ketik *menu* untuk kembali.';
+  }
+  const nom = jenis === 'pokok' ? koperasi.simpanan.pokok : koperasi.simpanan.wajib;
+  return toBayar(jid, m, jenis, nom);
 }
 
 /** Proses balasan saat user sedang di alur setor. Null bila tidak sedang setor. */
@@ -109,7 +123,7 @@ export function handleSetor(jid: string, m: Member, text: string): string | null
     }
     case 'bayar': {
       if (!CONFIRM.includes(low)) {
-        return `Kalau transfer sudah selesai, balas *sudah bayar* untuk konfirmasi. _(atau *batal*)_`;
+        return `Kalau transfer sudah selesai, balas *sudah bayar* untuk konfirmasi.\n_Atau ketik *batal* / *menu* untuk keluar dari setor._`;
       }
       const jenis = d.jenis!;
       const nominal = d.nominal!;

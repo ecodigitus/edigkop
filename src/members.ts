@@ -7,7 +7,7 @@
  * (mis. SIMKOPDES) berdasarkan nomor terverifikasi.
  */
 import { makeCode, registerCode } from './referral';
-import { dbEnabled, fetchAll, upsert, selectWhere } from './db';
+import { dbEnabled, fetchAll, upsert, selectWhere, unlinkPhone } from './db';
 
 /**
  * PERAN anggota (POV member di WhatsApp — papan tulis Hackathon poin 2 & 3).
@@ -50,6 +50,20 @@ export type Pendaftaran = {
   kecamatan?: string;
   desa?: string;
   koperasi?: string; // koperasi yang dipilih saat daftar
+  // Data lengkap hasil scan KTP (opsional; tipe inline agar tak impor silang ke ktp.ts).
+  ktp?: {
+    tempatTglLahir?: string;
+    golDarah?: string;
+    alamat?: string;
+    rtRw?: string;
+    kelDesa?: string;
+    kecamatan?: string;
+    agama?: string;
+    statusPerkawinan?: string;
+    pekerjaan?: string;
+    kewarganegaraan?: string;
+    berlakuHingga?: string;
+  };
 };
 
 export type Member = {
@@ -232,7 +246,14 @@ export async function hydrateMembers(): Promise<number> {
 /** Write-through profil anggota ke Supabase (fire-and-forget; no-op bila DB nonaktif). */
 export function persistMember(m: Member, phone?: string): void {
   if (!dbEnabled) return;
-  upsert('members', memberToRow(m, phone), 'no_anggota');
+  const row = memberToRow(m, phone);
+  if (phone) {
+    // phone UNIQUE: lepaskan dari anggota lain dulu (demo ulang di HP sama) baru upsert,
+    // supaya tak bentrok & data anggota baru benar-benar tersimpan.
+    void unlinkPhone(phone, m.noAnggota).then(() => upsert('members', row, 'no_anggota'));
+  } else {
+    upsert('members', row, 'no_anggota');
+  }
 }
 
 /**
