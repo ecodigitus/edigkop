@@ -2,8 +2,15 @@
  * Query READ-ONLY ke 27 tabel dataset resmi SimkopDes (Shared Database hackathon).
  * JANGAN pernah INSERT/UPDATE/DELETE di sini — database dipakai bersama ~100 tim.
  * Skema tabel-tabel ini identik dgn metadata_database_hackathon_final.xlsx (diverifikasi 10 Juli 2026).
+ *
+ * MODE PREVIEW: set MOCK_DATA=true di .env untuk melihat UI dashboard tanpa koneksi database
+ * nyata — berguna untuk latihan demo/pitch, atau jika Shared Database bermasalah saat hari-H.
+ * Angka mock di bawah = angka NYATA hasil query tim (10 Juli 2026); nama wilayah di
+ * getWilayahTerpadat() adalah CONTOH placeholder, bukan hasil query asli.
  */
 import { getPool } from "./pool";
+
+const MOCK = process.env.MOCK_DATA === "true";
 
 export interface StatusBreakdown {
   label: string;
@@ -11,6 +18,12 @@ export interface StatusBreakdown {
 }
 
 export async function getStatusAkunBreakdown(): Promise<StatusBreakdown[]> {
+  if (MOCK) {
+    return [
+      { label: "Tidak Punya Akun", jumlah: 56645 },
+      { label: "Punya Akun", jumlah: 17624 },
+    ];
+  }
   const { rows } = await getPool().query(
     `SELECT status_akun AS label, COUNT(*)::int AS jumlah
      FROM anggota_koperasi
@@ -23,6 +36,12 @@ export async function getStatusAkunBreakdown(): Promise<StatusBreakdown[]> {
 export async function getStatusKeanggotaanBreakdown(): Promise<
   StatusBreakdown[]
 > {
+  if (MOCK) {
+    return [
+      { label: "Approved", jumlah: 66302 },
+      { label: "Requested", jumlah: 7967 },
+    ];
+  }
   const { rows } = await getPool().query(
     `SELECT status_keanggotaan AS label, COUNT(*)::int AS jumlah
      FROM anggota_koperasi
@@ -39,6 +58,14 @@ export interface RatParticipation {
 }
 
 export async function getRatParticipation(): Promise<RatParticipation[]> {
+  if (MOCK) {
+    return [
+      { status_rat: "Verified", rata_peserta: 25.0, jumlah: 289 },
+      { status_rat: "Reported", rata_peserta: 29.6, jumlah: 32 },
+      { status_rat: "Rejected", rata_peserta: 42.7, jumlah: 7 },
+      { status_rat: "Drafted", rata_peserta: 0.0, jumlah: 13 },
+    ];
+  }
   const { rows } = await getPool().query(
     `SELECT status_rat,
             ROUND(AVG(jumlah_peserta_rat)::numeric, 1) AS rata_peserta,
@@ -59,6 +86,9 @@ export interface DatasetTotals {
 }
 
 export async function getDatasetTotals(): Promise<DatasetTotals> {
+  if (MOCK) {
+    return { total_koperasi: 1026, total_anggota: 74269 };
+  }
   const { rows } = await getPool().query(
     `SELECT (SELECT COUNT(*) FROM profil_koperasi)::int AS total_koperasi,
             (SELECT COUNT(*) FROM anggota_koperasi)::int AS total_anggota`
@@ -77,6 +107,15 @@ export interface WilayahTerpadat {
 export async function getWilayahTerpadat(
   limit = 10
 ): Promise<WilayahTerpadat[]> {
+  if (MOCK) {
+    // CONTOH placeholder — bukan hasil query asli. Jalankan query nyata (§2.3 strategi)
+    // untuk pilih wilayah pilot demo sebenarnya.
+    return [
+      { provinsi: "(contoh) Jawa Barat", kab_kota: "(contoh) Kab. A", jumlah_koperasi: 42, jumlah_anggota: 3120 },
+      { provinsi: "(contoh) Jawa Tengah", kab_kota: "(contoh) Kab. B", jumlah_koperasi: 37, jumlah_anggota: 2650 },
+      { provinsi: "(contoh) Jawa Timur", kab_kota: "(contoh) Kab. C", jumlah_koperasi: 31, jumlah_anggota: 2210 },
+    ].slice(0, limit);
+  }
   const { rows } = await getPool().query(
     `SELECT rw.provinsi, rw.kab_kota,
             COUNT(DISTINCT rkw.koperasi_ref)::int AS jumlah_koperasi,
