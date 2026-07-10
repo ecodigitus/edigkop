@@ -93,6 +93,72 @@ export async function completeRaw(system: string, userText: string): Promise<str
   return withFallback(system, [{ role: 'user', content: userText }]);
 }
 
+type Provider = 'groq' | 'anthropic' | 'gemini' | 'vertex';
+
+// Override provider saat runtime (via command "ganti model ..."), null = pakai .env.
+let providerOverride: Provider | null = null;
+
+/** Provider AI yang aktif sekarang (override runtime > config .env). */
+export function activeProvider(): Provider {
+  return providerOverride ?? (config.ai.provider as Provider);
+}
+
+/** True bila provider punya kredensial siap pakai. */
+function providerReady(p: Provider): boolean {
+  return p === 'groq'
+    ? config.groq.apiKey.length > 0
+    : p === 'anthropic'
+      ? config.anthropic.apiKey.length > 0
+      : p === 'gemini'
+        ? config.gemini.apiKey.length > 0
+        : config.vertex.keyFile.length > 0;
+}
+
+/** Nama model untuk tiap provider (buat pesan). */
+function modelNameOf(p: Provider): string {
+  return p === 'groq'
+    ? config.groq.model
+    : p === 'anthropic'
+      ? config.anthropic.model
+      : p === 'gemini'
+        ? config.gemini.model
+        : config.vertex.model;
+}
+
+/**
+ * Command ganti provider AI saat runtime (tanpa menu/restart). Contoh:
+ *   "ganti model groq" · "pakai vertex" · "ganti ai gemini" · "model apa"
+ * Return balasan bila ini command, atau null (bukan command → lanjut alur biasa).
+ */
+export function matchModelSwitch(text: string): string | null {
+  const t = text.trim().toLowerCase();
+  const switchVerb = /\b(ganti|pakai|ubah|switch|set)\b/.test(t);
+  const aiWord = /\b(model|ai|provider|groq|gemini|vertex|claude|anthropic)\b/.test(t);
+  const askStatus = /\b(model|ai)\b/.test(t) && /\b(apa|sekarang|status|aktif|cek)\b/.test(t);
+  if (!(switchVerb && aiWord) && !askStatus) return null;
+
+  let target: Provider | null = null;
+  if (/\bgroq\b/.test(t)) target = 'groq';
+  else if (/\bvertex\b/.test(t)) target = 'vertex';
+  else if (/\bgemini\b/.test(t)) target = 'vertex'; // Gemini yang aktif = via Vertex
+  else if (/\b(claude|anthropic)\b/.test(t)) target = 'anthropic';
+
+  if (!target) {
+    return (
+      `🤖 Model AI sekarang: *${activeProvider()}* (${modelNameOf(activeProvider())}).\n` +
+      `Ganti dengan: *ganti model groq* / *ganti model vertex* / *ganti model claude*.`
+    );
+  }
+  if (!providerReady(target)) {
+    return `⚠️ Provider *${target}* belum siap — kredensialnya belum diisi di .env. Coba yang lain (mis. *groq* / *vertex*).`;
+  }
+  providerOverride = target;
+  return (
+    `✅ Model AI diganti ke *${target}* (${modelNameOf(target)}).\n` +
+    `Sekarang ngobrol AI, intent, & fallback pakai ini. _(sementara; balik ke default .env kalau bot restart)_`
+  );
+}
+
 /** Panggil provider sesuai konfigurasi. */
 function dispatch(provider: string, system: string, messages: ChatMessage[]): Promise<string> {
   return provider === 'anthropic'
@@ -109,14 +175,12 @@ function dispatch(provider: string, system: string, messages: ChatMessage[]): Pr
  * otomatis fallback ke Groq — supaya AI tak pernah mati saat demo.
  */
 async function withFallback(system: string, messages: ChatMessage[]): Promise<string> {
+  const provider = activeProvider();
   try {
-    return await dispatch(config.ai.provider, system, messages);
+    return await dispatch(provider, system, messages);
   } catch (err) {
-    if (config.ai.provider !== 'groq' && config.groq.apiKey.length > 0) {
-      logger.warn(
-        { err: (err as Error).message, from: config.ai.provider },
-        'Provider AI gagal → fallback ke Groq',
-      );
+    if (provider !== 'groq' && config.groq.apiKey.length > 0) {
+      logger.warn({ err: (err as Error).message, from: provider }, 'Provider AI gagal → fallback ke Groq');
       return callGroq(system, messages);
     }
     throw err;
