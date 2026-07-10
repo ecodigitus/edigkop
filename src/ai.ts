@@ -4,6 +4,7 @@ import { koperasi, koperasiContext } from './business';
 import { rupiah } from './format';
 import { totalSimpanan, hitungSkorKeterlibatan, type Member } from './members';
 import { callVertex } from './vertex';
+import { logger } from './logger';
 import type { ChatMessage } from './session';
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
@@ -79,16 +80,7 @@ export async function generateReply(
 
   const system = member ? memberSystemPrompt(member) : prospectSystemPrompt();
   const messages: ChatMessage[] = [...history, { role: 'user', content: userText }];
-
-  const text =
-    config.ai.provider === 'anthropic'
-      ? await callAnthropic(system, messages)
-      : config.ai.provider === 'gemini'
-        ? await callGemini(system, messages)
-        : config.ai.provider === 'vertex'
-          ? await callVertex(system, messages)
-          : await callGroq(system, messages);
-
+  const text = await withFallback(system, messages);
   return text.trim() || FALLBACK_REPLY;
 }
 
@@ -98,14 +90,37 @@ export async function generateReply(
  */
 export async function completeRaw(system: string, userText: string): Promise<string> {
   if (!aiEnabled) throw new Error('AI tidak aktif.');
-  const messages: ChatMessage[] = [{ role: 'user', content: userText }];
-  return config.ai.provider === 'anthropic'
+  return withFallback(system, [{ role: 'user', content: userText }]);
+}
+
+/** Panggil provider sesuai konfigurasi. */
+function dispatch(provider: string, system: string, messages: ChatMessage[]): Promise<string> {
+  return provider === 'anthropic'
     ? callAnthropic(system, messages)
-    : config.ai.provider === 'gemini'
+    : provider === 'gemini'
       ? callGemini(system, messages)
-      : config.ai.provider === 'vertex'
+      : provider === 'vertex'
         ? callVertex(system, messages)
         : callGroq(system, messages);
+}
+
+/**
+ * Panggil provider aktif; kalau GAGAL (mis. Vertex 429/kuota) & Groq tersedia,
+ * otomatis fallback ke Groq — supaya AI tak pernah mati saat demo.
+ */
+async function withFallback(system: string, messages: ChatMessage[]): Promise<string> {
+  try {
+    return await dispatch(config.ai.provider, system, messages);
+  } catch (err) {
+    if (config.ai.provider !== 'groq' && config.groq.apiKey.length > 0) {
+      logger.warn(
+        { err: (err as Error).message, from: config.ai.provider },
+        'Provider AI gagal → fallback ke Groq',
+      );
+      return callGroq(system, messages);
+    }
+    throw err;
+  }
 }
 
 /** Panggil Claude (Anthropic). */
