@@ -18,15 +18,28 @@ export default function HomePage() {
             petugas lapangan mendaftarkan warga.
           </li>
           <li>
-            <Link href="/dashboard">Dashboard Transparansi</Link> — data
-            tervalidasi tampil real-time, termasuk bukti dari sampel dataset
-            resmi SimkopDes.
+            <Link href="/koperasi">Dashboard Koperasi</Link> — pengurus &amp;
+            anggota di daerah pantau transparansi koperasinya sendiri
+            (SHU, RAT, keanggotaan).
           </li>
           <li>
             <Link href="/erat">e-RAT &amp; Voting</Link> — anggota bersuara
             tanpa harus hadir fisik.
           </li>
         </ol>
+      </div>
+
+      <div className="card">
+        <h3>Dua level dashboard</h3>
+        <p>
+          <Link href="/koperasi">Dashboard Koperasi</Link> — untuk{" "}
+          <strong>pengurus &amp; anggota di daerah</strong>, data khusus 1
+          koperasi.
+        </p>
+        <p>
+          <Link href="/dashboard">Dashboard Nasional</Link> — agregat lintas
+          1.026 koperasi, untuk <strong>bukti data ke juri/pemerintah pusat</strong>.
+        </p>
       </div>
 
       <div className="card">

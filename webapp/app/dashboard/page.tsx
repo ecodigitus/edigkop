@@ -29,6 +29,11 @@ async function loadData() {
   return { statusAkun, statusKeanggotaan, rat, totals, wilayah };
 }
 
+/**
+ * Dashboard NASIONAL — agregat lintas 1.026 koperasi sampel.
+ * Dipakai sebagai BUKTI DATA ke juri/pemerintah pusat (lihat docs/HACKATHON-STRATEGY.md §2.2),
+ * BUKAN dashboard yang dipakai pengurus koperasi sehari-hari — untuk itu lihat /koperasi/[ref].
+ */
 export default async function DashboardPage() {
   let data: {
     statusAkun: StatusBreakdown[];
@@ -76,7 +81,12 @@ export default async function DashboardPage() {
 
   return (
     <main className="container">
-      <h1>Dashboard Transparansi</h1>
+      <h1>Dashboard Nasional</h1>
+      <p>
+        Agregat lintas seluruh koperasi dalam sampel — untuk <strong>bukti
+        data ke juri/pemerintah pusat</strong>. Mencari data koperasi
+        tertentu? Buka <a href="/koperasi">Dashboard Koperasi</a>.
+      </p>
       <p className="note">
         Sampel dataset resmi SimkopDes ({data.totals.total_koperasi} koperasi,{" "}
         {data.totals.total_anggota} anggota) — bukan sensus nasional penuh.

@@ -19,7 +19,8 @@ export default function RootLayout({
         <nav className="nav">
           <span className="brand">EdigDaya</span>
           <Link href="/">Beranda</Link>
-          <Link href="/dashboard">Dashboard Transparansi</Link>
+          <Link href="/koperasi">Dashboard Koperasi</Link>
+          <Link href="/dashboard">Dashboard Nasional</Link>
           <Link href="/registrasi">Registrasi Terpandu</Link>
           <Link href="/erat">e-RAT</Link>
         </nav>

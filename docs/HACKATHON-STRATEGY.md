@@ -84,6 +84,22 @@ pelaku usaha mikro desa) terhadap Koperasi Desa/Kelurahan Merah Putih (KDMP), le
    koperasi, **plus cetak laporan fisik untuk papan informasi desa** agar transparansi tetap menjangkau
    warga yang tidak punya gawai.
 
+### 1B. Dua Level Dashboard (penting untuk live defense — jangan tertukar)
+
+EdigDaya punya **dua dashboard dengan audiens berbeda**, agar tidak disalahpahami sebagai "dashboard
+untuk pemerintah pusat" saja:
+
+| | **Dashboard Koperasi** (`/koperasi/[koperasiRef]`) | **Dashboard Nasional** (`/dashboard`) |
+|---|---|---|
+| **Untuk siapa** | **Pengurus & anggota koperasi di daerah** | Juri, pemerintah pusat, investor |
+| **Cakupan data** | Khusus **1 koperasi** (anggota, SHU, RAT-nya sendiri) | Agregat lintas **1.026 koperasi** sampel |
+| **Fungsi produk** | Transparansi harian — anggota lihat SHU-nya, pengurus pantau kepatuhan RAT | **Bukti data** untuk pitch (§2.2) — skala masalah nasional |
+| **Analogi** | Rekening koran pribadi | Laporan statistik BPS |
+
+Ini penting ditegaskan saat live defense: **produk inti EdigDaya melayani pengurus/anggota di daerah**
+(sesuai tema Keterlibatan Masyarakat) — Dashboard Nasional hanyalah *alat bantu pembuktian masalah*,
+bukan fitur utama yang dipakai koperasi sehari-hari.
+
 **Kenapa ini relevan dengan tema (bobot Relevansi 25% — terbesar):** TOR eksplisit menyoroti *"mengapa
 masyarakat belum tertarik menjadi anggota koperasi, kelompok usia mana yang partisipasinya rendah,
 bagaimana meningkatkan engagement berkelanjutan, dan bagaimana meningkatkan transparansi & kemudahan

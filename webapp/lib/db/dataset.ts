@@ -131,6 +131,77 @@ export async function getWilayahTerpadat(
   return rows;
 }
 
+export interface AnggotaKoperasiSummary {
+  total_anggota: number;
+  punya_akun: number;
+  tidak_punya_akun: number;
+  approved: number;
+  requested: number;
+}
+
+/** Ringkasan anggota KHUSUS 1 koperasi — dipakai Dashboard Koperasi (pengurus daerah). */
+export async function getAnggotaKoperasiSummary(
+  koperasiRef: string
+): Promise<AnggotaKoperasiSummary> {
+  if (MOCK) {
+    // Contoh 1 koperasi — bukan hasil query asli.
+    return {
+      total_anggota: 68,
+      punya_akun: 19,
+      tidak_punya_akun: 49,
+      approved: 61,
+      requested: 7,
+    };
+  }
+  const { rows } = await getPool().query(
+    `SELECT
+       COUNT(*)::int AS total_anggota,
+       COUNT(*) FILTER (WHERE status_akun = 'Punya Akun')::int AS punya_akun,
+       COUNT(*) FILTER (WHERE status_akun = 'Tidak Punya Akun')::int AS tidak_punya_akun,
+       COUNT(*) FILTER (WHERE status_keanggotaan = 'Approved')::int AS approved,
+       COUNT(*) FILTER (WHERE status_keanggotaan = 'Requested')::int AS requested
+     FROM anggota_koperasi WHERE koperasi_ref = $1`,
+    [koperasiRef]
+  );
+  return rows[0];
+}
+
+export interface RatHistoryItem {
+  rat_sample_id: string;
+  tanggal_rat: string | null;
+  status_rat: string;
+  jumlah_peserta_rat: number | null;
+}
+
+/** Riwayat RAT KHUSUS 1 koperasi — dipakai Dashboard Koperasi (pengurus daerah). */
+export async function getRatHistoryKoperasi(
+  koperasiRef: string
+): Promise<RatHistoryItem[]> {
+  if (MOCK) {
+    return [
+      {
+        rat_sample_id: "(contoh) RAT-2025-01",
+        tanggal_rat: "2025-06-15",
+        status_rat: "Verified",
+        jumlah_peserta_rat: 22,
+      },
+      {
+        rat_sample_id: "(contoh) RAT-2024-01",
+        tanggal_rat: "2024-06-10",
+        status_rat: "Reported",
+        jumlah_peserta_rat: 18,
+      },
+    ];
+  }
+  const { rows } = await getPool().query(
+    `SELECT rat_sample_id, tanggal_rat, status_rat, jumlah_peserta_rat
+     FROM rat_koperasi WHERE koperasi_ref = $1
+     ORDER BY tanggal_rat DESC NULLS LAST`,
+    [koperasiRef]
+  );
+  return rows;
+}
+
 export interface EstimasiShu {
   koperasi_ref: string;
   total_simpanan: number;
@@ -141,6 +212,13 @@ export interface EstimasiShu {
 export async function getEstimasiShu(
   koperasiRef: string
 ): Promise<EstimasiShu> {
+  if (MOCK) {
+    return {
+      koperasi_ref: koperasiRef,
+      total_simpanan: 184_500_000,
+      total_transaksi: 92_300_000,
+    };
+  }
   const { rows } = await getPool().query(
     `SELECT $1::text AS koperasi_ref,
             COALESCE((SELECT SUM(jumlah_simpanan) FROM simpanan_anggota WHERE koperasi_ref = $1), 0)::numeric AS total_simpanan,
@@ -164,6 +242,14 @@ export interface ProfilKoperasi {
 export async function getProfilKoperasi(
   koperasiRef: string
 ): Promise<ProfilKoperasi | null> {
+  if (MOCK) {
+    return {
+      koperasi_ref: koperasiRef,
+      nama_koperasi: "(Contoh) Koperasi Desa Merah Putih Sukamaju",
+      alamat_lengkap: "(Contoh) Jl. Desa Sukamaju No. 1",
+      status_registrasi: "Terverifikasi",
+    };
+  }
   const { rows } = await getPool().query(
     `SELECT koperasi_ref, nama_koperasi, alamat_lengkap, status_registrasi
      FROM profil_koperasi WHERE koperasi_ref = $1`,
