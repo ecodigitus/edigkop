@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- EdigDaya pitch deck · EdigDev · build 7 -->
+<!-- EdigDaya pitch deck · EdigDev · build 8 -->
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -161,13 +161,14 @@
     <div class="flow">
       <div class="step"><div class="ico">💬</div><h3>Anggota</h3><p>WhatsApp resmi (menu ketik-angka) + petugas lapangan</p></div>
       <div class="arr">→</div>
-      <div class="step"><div class="ico">🗄️</div><h3>EdigDaya</h3><p>Next.js · Supabase/PostgreSQL · Docker · LLM (alat bantu)</p></div>
+      <div class="step"><div class="ico">🗄️</div><h3>EdigDaya</h3><p>Next.js · PostgreSQL · LLM (alat bantu)</p></div>
       <div class="arr">⇄</div>
-      <div class="step"><div class="ico">🏛️</div><h3>SimkopDes</h3><p>kelembagaan · transaksi/bisnis · rat · ews kesehatan-keuangan</p></div>
+      <div class="step"><div class="ico">🏛️</div><h3>SimkopDes</h3><p>27 tabel resmi: kelembagaan · transaksi · rat · ews</p></div>
       <div class="arr">→</div>
-      <div class="step"><div class="ico">🖨️</div><h3>Transparansi</h3><p>Dashboard + laporan fisik papan desa</p></div>
+      <div class="step"><div class="ico">🖨️</div><h3>2 Dashboard</h3><p><b>Koperasi</b> (pengurus daerah) + <b>Nasional</b> (bukti data juri) + laporan fisik</p></div>
     </div>
     <p class="note">Skema data <strong>"SimkopDes-compatible"</strong> — mengikuti dataset resmi hackathon (27 tabel, kunci <code>koperasi_ref</code>): <code>anggota_koperasi</code>, <code>simpanan_anggota</code>, <code>rat_koperasi</code>, <code>transaksi_penjualan</code>. Hasil e-RAT &amp; keanggotaan dilaporkan balik (PP 7/2021). Menyasar Kemudahan Implementasi (15%) + tujuan TOR #5: "berpotensi diimplementasikan dalam ekosistem Kementerian".</p>
+    <p class="note">✅ MVP berjalan (Next.js 14, build &amp; smoke-test lolos): registrasi terpandu, Dashboard Koperasi, Dashboard Nasional, e-RAT, laporan fisik, webhook WhatsApp.</p>
   </section>
 
   <!-- 6 PEMBEDA / BLUE OCEAN -->
@@ -229,13 +230,19 @@
   <section class="slide">
     <div class="kicker">Kualitas Teknologi — Keamanan & Kepatuhan</div>
     <h2>Data anggota dijaga sesuai standar.</h2>
-    <ul>
-      <li>Enkripsi data pribadi (NIK, foto KTP/wajah) saat disimpan & saat transit (TLS)</li>
-      <li>RBAC per peran: warga, petugas lapangan, pengurus koperasi</li>
-      <li>Audit log untuk setiap perubahan data lahan/transaksi</li>
-      <li>Consent eksplisit sebelum verifikasi foto KTP/wajah, sesuai UU PDP</li>
-    </ul>
-    <p class="disc">Disclosure penggunaan AI: Claude digunakan sebagai alat bantu riset publik, penataan dokumen/deck, dan kode pendukung. Ide inti & solusi adalah gagasan asli Tim EdigDev.</p>
+    <div class="row">
+      <div class="col"><h3>✅ Sudah di MVP</h3>
+        <ul><li>NIK <b>tidak disimpan mentah</b> — hash SHA-256 + bentuk tersamar (32********01)</li>
+        <li>Parameterized query di semua akses DB — cegah SQL injection</li>
+        <li>Kredensial hanya via <code>.env</code>, tak pernah masuk kode/repo</li>
+        <li>Audit log untuk setiap aksi tulis (registrasi, vote e-RAT)</li></ul></div>
+      <div class="col"><h3>🔜 Roadmap</h3>
+        <ul><li>Enkripsi foto KTP/wajah saat capture</li>
+        <li>RBAC penuh per peran (warga, petugas, pengurus)</li>
+        <li>Consent eksplisit sebelum verifikasi foto</li>
+        <li>Rate-limit endpoint publik</li></ul></div>
+    </div>
+    <p class="disc">Disclosure penggunaan AI: Claude digunakan sebagai alat bantu riset publik, penulisan kode pendukung, dan penataan dokumen/deck. Ide inti &amp; solusi adalah gagasan asli Tim EdigDev.</p>
   </section>
 
   <!-- 11 TEAM PROFILE -->
@@ -259,6 +266,7 @@
     <h1 style="font-size:4.4vw">Koperasi desa butuh kepercayaan,<br>bukan sekadar aplikasi.</h1>
     <p class="lead" style="margin-top:2.4vh">EdigDaya menghubungkan kembali warga akar rumput dengan koperasinya — didampingi, dipercaya, dan sejahtera bersama.</p>
     <p style="margin-top:3vh;color:#ffe9eb">Terima kasih · Tim EdigDev · <strong>EdigDaya</strong></p>
+    <p style="margin-top:1vh;color:#ffd7da;font-size:1.1vw">Repo: github.com/ecodigitus/edigkop</p>
   </section>
 
 </div>
