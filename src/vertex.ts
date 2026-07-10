@@ -82,19 +82,27 @@ export async function callVertex(system: string, messages: ChatMessage[]): Promi
     parts: [{ text: m.content }],
   }));
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: system }] },
-      contents,
-      generationConfig: { maxOutputTokens: maxTokens, temperature: 0.5 },
-    }),
-  });
-  if (!res.ok) {
-    const detail = await res.text().catch(() => '');
-    throw new Error(`Vertex API ${res.status}: ${detail.slice(0, 200)}`);
+  // Timeout biar tak menggantung (model "thinking" seperti *-pro bisa lama).
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 30_000);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: system }] },
+        contents,
+        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.5 },
+      }),
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      const detail = await res.text().catch(() => '');
+      throw new Error(`Vertex API ${res.status}: ${detail.slice(0, 200)}`);
+    }
+    const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+    return (data.candidates?.[0]?.content?.parts ?? []).map((p) => p.text ?? '').join('');
+  } finally {
+    clearTimeout(timer);
   }
-  const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-  return (data.candidates?.[0]?.content?.parts ?? []).map((p) => p.text ?? '').join('');
 }
