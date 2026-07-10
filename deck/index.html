@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- EdigDaya pitch deck · EdigDev · build 10 -->
+<!-- EdigDaya pitch deck · EdigDev · build 11 -->
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -118,28 +118,28 @@
     </div>
   </section>
 
-  <!-- 2 PROBLEM STATEMENT -->
+  <!-- 2 PROBLEM STATEMENT (nasional, dashboard resmi) -->
   <section class="slide">
     <div class="kicker">Problem Statement</div>
-    <h2>Koperasi menyusut. Kepercayaan ambruk.</h2>
+    <h2>83 ribu terdaftar — tapi belum hidup.</h2>
     <div class="stat">
-      <div class="item"><div class="v red">209.488→130.119</div><div class="l">unit koperasi nasional (2014→2023) — 82.000 dibersihkan karena tidak aktif</div></div>
-      <div class="item"><div class="v gold">71,5%</div><div class="l">koperasi yang <b>menggelar RAT</b> — sisanya minim akuntabilitas ke anggota</div></div>
-      <div class="item"><div class="v">~10%</div><div class="l">koperasi yang <b>memanfaatkan teknologi digital</b></div></div>
+      <div class="item"><div class="v">83.382</div><div class="l">koperasi <b>berbadan hukum</b> (Inpres 9/2025) — 99,9% target nasional</div></div>
+      <div class="item"><div class="v red">1,37%</div><div class="l">yang <b>benar-benar bertransaksi</b> — hanya 1.140 koperasi</div></div>
+      <div class="item"><div class="v gold">91,1%</div><div class="l"><b>"Tidak Sehat"</b> keuangan (dari yang sudah melapor)</div></div>
     </div>
-    <p class="note">80.000+ Koperasi Desa Merah Putih (KDMP) dibentuk lewat Inpres No. 9/2025 di atas fondasi ini — pengguna rata-rata berusia 55 tahun, minim literasi digital.</p>
+    <p class="note">Sumber: Dashboard SimkopDes resmi, per 11 Juli 2026. Ditambah: 62,49% koperasi belum lapor keuangan · 22,5% belum RAT. Sistem sudah dibangun — masalahnya di <b>pemanfaatan</b>, bukan ketersediaan.</p>
   </section>
 
-  <!-- 3 AKAR MASALAH + BUKTI DATA -->
+  <!-- 3 AKAR MASALAH: KETERLIBATAN ANGGOTA -->
   <section class="slide dark">
-    <div class="kicker">Problem Statement — Akar Masalah &amp; Bukti Terverifikasi</div>
-    <h2>Tiga penghalang di lapangan — dibuktikan data, bukan asumsi.</h2>
+    <div class="kicker">Problem Statement — Akarnya di Keterlibatan Anggota</div>
+    <h2>Koperasi punya sistem. Anggotanya belum terhubung.</h2>
     <div class="cards">
-      <div class="card"><div class="n">76,3%</div><h3>Terdaftar, Tak Terlibat Digital</h3><p>Sudah anggota tapi <b>tanpa akun digital</b> (56.645/74.269) — tak bisa cek SHU / akses layanan online.</p></div>
-      <div class="card"><div class="n">10,7%</div><h3>Onboarding Tersendat</h3><p>Pendaftaran macet di status <b>"Requested"</b> (7.967/74.269) — minat ada, proses berhenti di tengah jalan.</p></div>
-      <div class="card"><div class="n">~35%</div><h3>Partisipasi RAT Rendah</h3><p>Rata-rata <b>kehadiran RAT</b> hanya 25 dari ~72 anggota/koperasi → suara anggota lemah.</p></div>
+      <div class="card"><div class="n">95,6%</div><h3>Koperasi Punya Akun</h3><p>Registrasi entitas hampir tuntas (79.706/83.382) — <b>tapi itu koperasinya, bukan anggotanya.</b> <span style="font-size:.8vw;color:#9aa6ba">Dashboard SimkopDes</span></p></div>
+      <div class="card"><div class="n">76,3%</div><h3>Anggota Tanpa Akun</h3><p>Di level warga, <b>3 dari 4 anggota tak punya akun digital</b> (56.645/74.269) — tak bisa cek SHU / e-RAT. <span style="font-size:.8vw;color:#9aa6ba">Sampel DB, query 10 Jul</span></p></div>
+      <div class="card"><div class="n">~35%</div><h3>Partisipasi RAT Rendah</h3><p>Rata-rata kehadiran RAT ~25 dari ~72 anggota/koperasi → suara anggota lemah. <span style="font-size:.8vw;color:#9aa6ba">Sampel DB</span></p></div>
     </div>
-    <p class="note">Sampel dataset resmi SimkopDes (1.026 koperasi, 74.269 anggota) — kami query langsung ke Shared Database panitia, diverifikasi 10 Juli 2026. Bukan sensus nasional penuh (80.000+ KDMP), tapi bukti konkret dari data pemerintah sendiri.</p>
+    <p class="note">Paradoksnya: <b>koperasi terdaftar & punya akun (95,6%), tapi anggotanya belum terlibat digital</b> — dan hanya 1,37% yang hidup bertransaksi. Inilah gap "Keterlibatan Masyarakat" yang EdigDaya isi lewat WhatsApp (tanpa perlu bikin akun aplikasi).</p>
   </section>
 
   <!-- 4 SOLUSI OVERVIEW -->

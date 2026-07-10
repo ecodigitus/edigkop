@@ -111,20 +111,25 @@ layanan koperasi."* Ketiga pilar EdigDaya menjawab keempatnya secara langsung: r
 
 ## 2. Landasan Masalah — Dua Lapis Bukti (Konteks Nasional + Data Terverifikasi)
 
-Strategi penyajian masalah dibangun **2 lapis** agar kredibel sekaligus konkret: **Lapis 1** memberi
-skala/konteks nasional (dari riset & submission), **Lapis 2** memberi **bukti terverifikasi** dari query
-langsung ke database resmi panitia — jangan dicampur, sebut sumbernya secara eksplisit di tiap klaim.
+Strategi penyajian masalah dibangun **2 lapis** agar kredibel sekaligus konkret: **Lapis 1** = angka
+NASIONAL resmi dari **Dashboard SimkopDes** (bisa ditunjukkan langsung ke juri), **Lapis 2** = **bukti
+level-anggota** dari query ke database sampel panitia — jangan dicampur, sebut sumber & level di tiap klaim.
 
-### 2.1 Lapis 1 — Konteks Nasional (skala masalah, dari problem statement submission)
-- Pemerintah membentuk **80.000+ Koperasi Desa Merah Putih (KDMP)** lewat **Inpres No. 9/2025** sebagai
-  pilar ekonomi akar rumput (petani kecil & usaha mikro desa).
-- Koperasi nasional **menyusut** dari **209.488 unit (2014)** menjadi **130.119 unit (2023)** — 82.000
-  koperasi tidak aktif dibersihkan.
-- **Hanya 71,5%** koperasi yang menggelar RAT (Rapat Anggota Tahunan) — indikator lemahnya tata kelola
-  & kepercayaan anggota.
-- **Baru ~10%** koperasi yang memanfaatkan teknologi digital.
-- Pengguna/pengurus koperasi rata-rata berusia **55 tahun** (Sensus Pertanian 2023) dan minim literasi
-  digital.
+### 2.1 Lapis 1 — Angka Nasional Resmi (Dashboard SimkopDes, per 11 Juli 2026, terverifikasi screenshot)
+- **83.382** koperasi berbadan hukum (99,9% target Inpres 9/2025) — 79.706 punya akun (95,6%), 80.978 NPWP,
+  60.775 NIB. → *Registrasi entitas hampir tuntas.*
+- **Hanya 1.140 koperasi (1,37%) yang benar-benar bertransaksi** (53.347 transaksi, nilai Rp56,6 M).
+  → **jurang "terdaftar vs hidup"** — ini headline problem paling kuat.
+- **Kesehatan keuangan:** hanya **37,51% sudah lapor** (31.276); dari yang lapor, **91,1% "Tidak Sehat"**
+  (28.507), cuma 2,2% Sehat (683). **62,49% belum lapor** sama sekali. (Aset nasional Rp473,97 M,
+  Pendapatan Rp85,26 M.)
+- **RAT (2025):** 44.253 terverifikasi Dinas (53%), 6.011 dilaporkan, 14.353 draft, **18.765 belum RAT (22,5%)**.
+- **Tesis (selaras mentor Rama):** infrastruktur sudah ada (95,6% punya akun) — **masalahnya di
+  PEMANFAATAN, bukan ketersediaan.** "Punya sistem ≠ dipakai."
+
+> ⚠️ Cara aman sebut angka kesehatan: *"dari koperasi yang **sudah melapor**, 91,1% Tidak Sehat"* — jangan
+> bilang 91,1% dari semua (yang lapor baru 37,51%). Semua angka ini **KOPERASI-level**; jangan campur dengan
+> angka anggota-level di §2.2.
 
 ### 2.2 Lapis 2 — Bukti Terverifikasi (query langsung ke Shared Database SimkopDes, 10 Juli 2026)
 
@@ -139,6 +144,12 @@ koperasi)"** untuk angka-angka di bawah — JANGAN menyebutnya "data nasional 80
 **Validasi skema:** daftar 27 tabel hasil `\dt` di server **100% identik** dengan
 `metadata_database_hackathon_final.xlsx` — metadata bisa dipercaya penuh sebagai dokumentasi field
 (lihat §6C untuk pemetaan lengkap ke modul EdigDaya).
+
+**🎯 Paradoks kunci (senjata utama pitch — gabungan Lapis 1 + Lapis 2):**
+> Di level **koperasi**, registrasi digital nyaris tuntas: **95,6% koperasi punya akun** (Dashboard
+> SimkopDes). Tapi di level **anggota**, **76,3% justru TANPA akun digital** (sampel). Dan hanya **1,37%
+> koperasi yang benar-benar bertransaksi**. Artinya: **entitasnya sudah digital, warganya belum** — gap
+> keterlibatan ada di *last-mile* anggota, dan di situlah EdigDaya (WhatsApp-first) bermain.
 
 **Temuan kunci (hasil query tim, 10 Juli 2026):**
 
