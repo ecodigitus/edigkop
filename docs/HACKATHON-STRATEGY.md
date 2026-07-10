@@ -144,11 +144,13 @@ koperasi)"** untuk angka-angka di bawah — JANGAN menyebutnya "data nasional 80
 
 | Metrik | Angka | Menjawab Challenge Question TOR (tema Keterlibatan Masyarakat) |
 |---|---|---|
-| Anggota **tanpa akun digital** | `anggota_koperasi.status_akun`: **56.645 / 74.269 = 76,3%** | "Mengapa masyarakat belum tertarik jadi anggota koperasi?" |
-| Pendaftaran macet status **"Requested"** | `status_keanggotaan`: **7.967 / 74.269 = 10,7%** | "Bagaimana meningkatkan transparansi & kemudahan layanan?" |
-| Rata-rata anggota per koperasi | 74.269 ÷ 1.026 ≈ **72 anggota** | (basis pembanding partisipasi RAT di bawah) |
+| Anggota **tanpa akun digital** | `anggota_koperasi.status_akun`: **56.645 / 74.269 = 76,3%** | "Bagaimana meningkatkan engagement berkelanjutan?" + "transparansi & kemudahan layanan?" — *(bukan "belum tertarik jadi anggota": mereka SUDAH anggota, tapi belum terlibat digital)* |
 | Partisipasi RAT (rata-rata hadir vs. total anggota) | `rat_koperasi`: rata-rata 25 hadir dari ~72 anggota ≈ **35%** | "Bagaimana meningkatkan engagement anggota secara berkelanjutan?" |
+| Pendaftaran macet status **"Requested"** | `status_keanggotaan`: **7.967 / 74.269 = 10,7%** | "Bagaimana meningkatkan kemudahan layanan?" — minat ada (sudah mendaftar) tapi proses onboarding tersendat |
+| Rata-rata anggota per koperasi | 74.269 ÷ 1.026 ≈ **72 anggota** | (basis pembanding partisipasi RAT) |
 | Koperasi dengan RAT record terproses (Verified+Reported+Rejected) | 328 / 1.026 ≈ **32%** | (skala masalah tata kelola dalam sampel) |
+
+> ⚠️ **Koreksi penting (untuk live defense):** angka 76,3% "tanpa akun" TIDAK menjawab *"kenapa masyarakat belum tertarik JADI anggota"* — mereka sudah anggota. Untuk pertanyaan akuisisi itu kita butuh data NON-anggota yang tidak ada di dataset. Data kita kuat di tahap **funnel tengah–akhir** (sudah gabung → belum terlibat), bukan tahap akuisisi. Untuk akuisisi, EdigDaya menjawab **by design** (registrasi WA/petugas lapangan menurunkan hambatan), bukan lewat angka ini. Selalu bingkai 76,3% sebagai **gap keterlibatan DIGITAL** — bukan "belum terlibat sama sekali" (anggota bisa saja masih aktif offline di gerai/RAT).
 
 **Cara menyandingkan di pitch (jangan dicampur, urutkan begini):**
 1. Buka dengan **Lapis 1** (konteks nasional) → tunjukkan skala masalah besar & mengapa penting.
