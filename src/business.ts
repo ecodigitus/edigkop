@@ -6,7 +6,7 @@
 import type { Member } from './members';
 
 export const koperasi = {
-  name: 'Koperasi Merah Putih Desa Sukamaju',
+  name: 'Koperasi Desa Merah Putih',
   tagline: 'Dari anggota, oleh anggota, untuk anggota 🌾',
   jenis: 'Koperasi Simpan Pinjam & Serba Usaha',
   jamLayanan: 'Senin–Jumat 08.00–16.00 WIB · Sabtu 08.00–12.00 WIB',
@@ -79,26 +79,27 @@ ${koperasi.faqs.map((f, i) => `${i + 1}. T: ${f.q}\n   J: ${f.a}`).join('\n')}`;
 export function mainMenu(m?: Member): string {
   const item9 = m
     ? m.role === 'produsen'
-      ? `9️⃣  Dashboard Usaha saya (produsen) 🏪\n`
-      : `9️⃣  Keuangan saya (modal & belanja) 📊\n`
+      ? `*9.*  Dashboard Usaha saya (produsen) 🏪\n`
+      : `*9.*  Keuangan saya (modal & belanja) 📊\n`
     : '';
   return (
     `🌾 Selamat datang di *${koperasi.name}*\n` +
     `_Asisten Anggota — siap bantu kapan saja 🤝_\n\n` +
     `Ketik *angka* atau *kata kunci*:\n` +
-    `1️⃣  Simpanan saya\n` +
-    `2️⃣  Estimasi SHU saya\n` +
-    `3️⃣  Pinjaman\n` +
-    `4️⃣  e-RAT & voting\n` +
-    `5️⃣  Poin & misi saya\n` +
-    `6️⃣  Hubungi pengurus\n` +
-    `7️⃣  Ajak teman (kode referral) 🤝\n` +
-    `8️⃣  Pre-Order barang (PO) 📦\n` +
+    `*1.*  Simpanan saya\n` +
+    `*2.*  Estimasi SHU saya\n` +
+    `*3.*  Pinjaman\n` +
+    `*4.*  e-RAT & voting\n` +
+    `*5.*  Poin & misi saya\n` +
+    `*6.*  Hubungi pengurus\n` +
+    `*7.*  Ajak teman (kode referral) 🤝\n` +
+    `*8.*  Pre-Order barang (PO) 📦\n` +
     item9 +
-    `🔟  Ngobrol dengan asisten AI 🤖\n` +
+    `*10.* Ngobrol dengan asisten AI 🤖\n` +
     `*11.* Daftar pengurus 👥\n` +
     `*12.* Pengumuman 📢\n` +
     `*13.* Anggota Jaga Anggota 🛡️\n` +
+    `*14.* Koperasi Global (data nasional) 🌐\n` +
     `\n` +
     `Atau tanya bebas, mis. *"cara nambah simpanan?"* 😊`
   );

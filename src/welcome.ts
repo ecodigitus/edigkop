@@ -16,11 +16,25 @@ export function prospectWelcome(): string {
     `*${koperasi.name}* 🇮🇩🏠\n\n` +
     `Aku asisten digitalmu — siap bantu kenalan sama koperasi & jawab pertanyaanmu. 😊\n\n` +
     `Mau mulai dari mana? Balas *angka*-nya:\n` +
-    `1️⃣  Belum ngerti koperasi\n` +
-    `2️⃣  Menu\n` +
-    `3️⃣  Ngobrol dengan asisten koperasi\n` +
-    `4️⃣  Aktivasi Akun Anggota Koperasi\n\n` +
-    `_Belum punya akun? Pilih *4* — nanti bisa pilih aktivasi kilat (demo) atau isi form lengkap._`
+    `1️⃣  Periksa aktivasi _(sudah terdaftar di koperasi?)_\n` +
+    `2️⃣  Belum ngerti koperasi\n` +
+    `3️⃣  Menu\n` +
+    `4️⃣  Ngobrol dengan asisten koperasi\n` +
+    `5️⃣  Aktivasi Akun Anggota Koperasi _(daftar baru)_\n\n` +
+    `_Sudah terdaftar? Pilih *1* buat cek & aktifkan akunmu. Belum punya akun? Pilih *5* buat daftar (kilat/demo atau form lengkap)._`
+  );
+}
+
+/**
+ * Nudge SINGKAT untuk memandu user mengetik "mulai" (first-touch / saat bingung).
+ * Sengaja ringkas — tidak menampilkan seluruh menu, cukup ajakan command.
+ */
+export function startNudge(): string {
+  return (
+    `Halo! 👋 Selamat datang di layanan WhatsApp\n` +
+    `*${koperasi.name}* 🇮🇩🏠\n\n` +
+    `Aku asisten digitalmu, siap bantu kamu. 😊\n\n` +
+    `Buat mulai, cukup ketik *mulai* ya! 🙌`
   );
 }
 

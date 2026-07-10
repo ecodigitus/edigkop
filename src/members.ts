@@ -7,7 +7,7 @@
  * (mis. SIMKOPDES) berdasarkan nomor terverifikasi.
  */
 import { makeCode, registerCode } from './referral';
-import { dbEnabled, fetchAll, upsert } from './db';
+import { dbEnabled, fetchAll, upsert, selectWhere } from './db';
 
 /**
  * PERAN anggota (POV member di WhatsApp — papan tulis Hackathon poin 2 & 3).
@@ -253,6 +253,36 @@ export function newMemberProfile(nama: string, noAnggota: string): Member {
     keuangan: { modal: 0, pengeluaran: 0 },
     usaha: null,
   };
+}
+
+/** Hasil verifikasi "Periksa Aktivasi". */
+export type VerifyResult =
+  | { status: 'ok'; member: Member }
+  | { status: 'notfound' }
+  | { status: 'claimed' } // cocok, tapi sudah terhubung ke nomor WA lain
+  | { status: 'dboff' };
+
+/**
+ * PERIKSA AKTIVASI: verifikasi anggota yang SUDAH terdaftar di sistem koperasi
+ * lewat *Nomor Anggota* (tanpa NIK — minimalisasi data pribadi/UU PDP). Bila
+ * cocok & belum diklaim nomor lain → tautkan nomor WA ini & aktifkan (akses
+ * penuh). Read-first, lalu write-through nomor via activateMember(). Tidak
+ * pernah menghapus data.
+ *
+ * Catatan produksi: untuk keamanan lebih kuat, tambahkan verifikasi OTP ke
+ * nomor terdaftar sebelum menautkan (cegah klaim oleh yang tahu nomor anggota).
+ */
+export async function verifyExistingMember(jid: string, noAnggota: string): Promise<VerifyResult> {
+  if (!dbEnabled) return { status: 'dboff' };
+  const phone = jid.split('@')[0] ?? '';
+  const rows = await selectWhere('members', { no_anggota: noAnggota });
+  const row = rows[0];
+  if (!row) return { status: 'notfound' };
+  // Sudah ditautkan ke nomor LAIN → tolak (cegah pengambilalihan akun / OWASP A01).
+  if (row.phone && row.phone !== phone) return { status: 'claimed' };
+  const member = rowToMember(row);
+  activateMember(jid, member); // tautkan phone + write-through + daftarkan kode referral
+  return { status: 'ok', member };
 }
 
 /** Ambil data anggota dari nomor WhatsApp (JID). Fallback ke profil demo. */

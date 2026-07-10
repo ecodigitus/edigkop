@@ -11,6 +11,7 @@ import { config } from './config';
 import { logger, waLogger, maskJid } from './logger';
 import { allowed, setAiMode } from './session';
 import { cancelActivation } from './activation';
+import { cancelPeriksa } from './periksaaktivasi';
 import { cancelLaporan } from './laporan';
 import { cancelPoForm, drainOutbox, handleAdminPo } from './preorder';
 import { route } from './router';
@@ -133,7 +134,7 @@ async function handleMessage(sock: WASocket, msg: proto.IWebMessageInfo): Promis
 
   // Validasi input (OWASP: jangan proses input tak wajar)
   if (!text) {
-    await sock.sendMessage(jid, { text: 'Halo! Kirim pesan *teks* ya. Ketik *menu* untuk lihat pilihan. 🙂' });
+    await sock.sendMessage(jid, { text: 'Halo! 👋 Kirim pesan *teks* ya. Ketik *mulai* untuk memulai. 🙌' });
     return;
   }
   if (text.length > config.limits.maxInboundChars) {
@@ -166,6 +167,7 @@ async function handleMessage(sock: WASocket, msg: proto.IWebMessageInfo): Promis
   if (WELCOME_TRIGGERS.has(text.toLowerCase())) {
     setAiMode(jid, false); // reset: kalau lagi ngobrol AI, "mulai" mengembalikan ke menu awal
     cancelActivation(jid); // reset: batalkan form aktivasi yang sedang berjalan
+    cancelPeriksa(jid); // reset: batalkan alur Periksa Aktivasi yang sedang berjalan
     cancelLaporan(jid); // reset: batalkan form laporan (menu 13) yang sedang berjalan
     cancelPoForm(jid); // reset: batalkan form Pre-Order yang sedang berjalan
     await sendWelcomeCard(sock, jid);

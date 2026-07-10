@@ -36,6 +36,25 @@ export async function fetchAll(table: string): Promise<Record<string, any>[]> {
 }
 
 /**
+ * Ambil baris yang cocok dengan SEMUA filter (eq). Kembalikan [] bila DB nonaktif
+ * / error (tak melempar). Nilai di-bind aman oleh SDK (anti SQL injection).
+ */
+export async function selectWhere(
+  table: string,
+  filters: Record<string, unknown>,
+): Promise<Record<string, any>[]> {
+  if (!client) return [];
+  let q = client.from(table).select('*');
+  for (const [k, v] of Object.entries(filters)) q = q.eq(k, v as never);
+  const { data, error } = await q;
+  if (error) {
+    logger.error({ err: error.message, table }, 'Supabase selectWhere gagal');
+    return [];
+  }
+  return data ?? [];
+}
+
+/**
  * Sisipkan satu baris (append-only) dan kembalikan baris yang tersimpan
  * (berisi kolom auto seperti id & created_at). Kembalikan null bila DB nonaktif
  * atau error (tak melempar) — pemanggil boleh fallback ke data lokal.
