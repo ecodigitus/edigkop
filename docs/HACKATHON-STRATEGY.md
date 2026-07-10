@@ -46,13 +46,19 @@
 - **Sumber data resmi dari panitia (bagian "K. Link Database" TOR):**
   `simkopdes.go.id/pers/dashboard`, `/pers/rat`, `/pers/transaksi/bisnis`,
   `/pers/ews/kesehatan-keuangan`, `/pers/kelembagaan`, dan `s.simkopdes.go.id/database-hackaton`.
-  ✅ **Sudah diverifikasi manual (7 Juli 2026):** link `database-hackaton` mengarah ke **folder Google
-  Drive "Aset Database"** (bukan REST API), dimiliki oleh `shely@satu.kop.id` (domain resmi panitia).
-  **Folder tersebut saat ini masih KOSONG** ("Drop files here") — dataset belum diunggah panitia.
-  Jangan mengklaim "sudah terintegrasi data SimkopDes" ke juri sampai folder ini benar-benar berisi
-  data; pantau berkala menjelang 10 Juli 2026, atau konfirmasi ke panitia (`salam@pebs-febui.org`)
-  kapan dataset akan tersedia. Siapkan **data dummy sendiri** sebagai cadangan demo (lihat §9) agar
-  tidak bergantung pada dataset panitia yang belum pasti waktunya.
+  Link `database-hackaton` mengarah ke **folder Google Drive "Aset Database"** (bukan REST API),
+  dimiliki `shely@satu.kop.id` — per 7 Juli 2026 masih kosong (kanal ini terpisah dari poin di bawah).
+- **✅ Akses Shared Database resmi (email panitia, 10 Juli 2026):** panitia membagikan **Google Cloud
+  Credit** + kredensial **Shared PostgreSQL Database** (`hackathon_2026`) berisi **27 tabel data
+  koperasi nyata** yang dipakai bersama oleh 100 tim. **Sudah berhasil dikoneksikan tim (10 Juli 2026)**
+  — daftar tabel via `\dt` **100% identik** dengan `metadata_database_hackathon_final.xlsx` yang
+  panitia bagikan sebelumnya (lihat §6C untuk detail & temuan data).
+  🔒 **Wajib:** simpan host/user/password di `.env` lokal (lihat email panitia/grup WA) —
+  **JANGAN PERNAH commit kredensial ke repo ini (publik)**. Setiap tabel milik aplikasi EdigDaya sendiri
+  (bukan bagian 27 tabel dataset) **wajib prefix `edigdev_`** agar tidak tabrakan dengan 99 tim lain.
+  **Hanya SELECT** pada 27 tabel dataset; **INSERT/UPDATE/CREATE bebas** pada tabel `edigdev_*` milik
+  sendiri (baik di database yang sama, atau — direkomendasikan untuk stabilitas demo — di-*mirror* ke
+  database EdigDaya sendiri agar tidak bergantung server bersama saat pitching).
 - **Timeline tersisa:** 3–5 Juli Online Mentorship (selesai) → **6–7 Juli konfirmasi TOP 100 + Consent
   Form + KTP (deadline 7 Juli 23.59 WIB)** → **10–11 Juli Offline Hackathon & Pitching Day** (sprint
   24–36 jam di Jakarta) → **12 Juli Awarding Day** (3 pemenang).
@@ -87,9 +93,13 @@ layanan koperasi."* Ketiga pilar EdigDaya menjawab keempatnya secara langsung: r
 
 ---
 
-## 2. Landasan Masalah (data dari problem statement submission + riset pendukung)
+## 2. Landasan Masalah — Dua Lapis Bukti (Konteks Nasional + Data Terverifikasi)
 
-### 2.1 Skala & urgensi (dari dokumen submission resmi)
+Strategi penyajian masalah dibangun **2 lapis** agar kredibel sekaligus konkret: **Lapis 1** memberi
+skala/konteks nasional (dari riset & submission), **Lapis 2** memberi **bukti terverifikasi** dari query
+langsung ke database resmi panitia — jangan dicampur, sebut sumbernya secara eksplisit di tiap klaim.
+
+### 2.1 Lapis 1 — Konteks Nasional (skala masalah, dari problem statement submission)
 - Pemerintah membentuk **80.000+ Koperasi Desa Merah Putih (KDMP)** lewat **Inpres No. 9/2025** sebagai
   pilar ekonomi akar rumput (petani kecil & usaha mikro desa).
 - Koperasi nasional **menyusut** dari **209.488 unit (2014)** menjadi **130.119 unit (2023)** — 82.000
@@ -100,13 +110,68 @@ layanan koperasi."* Ketiga pilar EdigDaya menjawab keempatnya secara langsung: r
 - Pengguna/pengurus koperasi rata-rata berusia **55 tahun** (Sensus Pertanian 2023) dan minim literasi
   digital.
 
-### 2.2 Tiga hambatan lapangan (problem statement submission)
+### 2.2 Lapis 2 — Bukti Terverifikasi (query langsung ke Shared Database SimkopDes, 10 Juli 2026)
+
+**⚠️ Provenance data (wajib jujur ke juri):** ini **SAMPEL 1.026 koperasi / 74.269 anggota** yang
+dikurasi khusus untuk hackathon — **BUKAN** seluruh database nasional (80.000+ KDMP). Indikasi: field
+`transaksi_sample_id`/`produk_sample_id` di metadata eksplisit memakai kata **"sample"**, dan skala 1.026
+≈ hanya 1,3% dari total nasional. Namun datanya tampak **data asli yang dianonimkan** (bukan sintetis) —
+NIK disamarkan dengan pola asli (`32********01`), variasi penulisan nama bank tidak konsisten (ciri khas
+input manusia, bukan data buatan yang rapi). **Selalu sebut "sampel dataset resmi SimkopDes (1.026
+koperasi)"** untuk angka-angka di bawah — JANGAN menyebutnya "data nasional 80.000 KDMP".
+
+**Validasi skema:** daftar 27 tabel hasil `\dt` di server **100% identik** dengan
+`metadata_database_hackathon_final.xlsx` — metadata bisa dipercaya penuh sebagai dokumentasi field
+(lihat §6C untuk pemetaan lengkap ke modul EdigDaya).
+
+**Temuan kunci (hasil query tim, 10 Juli 2026):**
+
+| Metrik | Angka | Menjawab Challenge Question TOR (tema Keterlibatan Masyarakat) |
+|---|---|---|
+| Anggota **tanpa akun digital** | `anggota_koperasi.status_akun`: **56.645 / 74.269 = 76,3%** | "Mengapa masyarakat belum tertarik jadi anggota koperasi?" |
+| Pendaftaran macet status **"Requested"** | `status_keanggotaan`: **7.967 / 74.269 = 10,7%** | "Bagaimana meningkatkan transparansi & kemudahan layanan?" |
+| Rata-rata anggota per koperasi | 74.269 ÷ 1.026 ≈ **72 anggota** | (basis pembanding partisipasi RAT di bawah) |
+| Partisipasi RAT (rata-rata hadir vs. total anggota) | `rat_koperasi`: rata-rata 25 hadir dari ~72 anggota ≈ **35%** | "Bagaimana meningkatkan engagement anggota secara berkelanjutan?" |
+| Koperasi dengan RAT record terproses (Verified+Reported+Rejected) | 328 / 1.026 ≈ **32%** | (skala masalah tata kelola dalam sampel) |
+
+**Cara menyandingkan di pitch (jangan dicampur, urutkan begini):**
+1. Buka dengan **Lapis 1** (konteks nasional) → tunjukkan skala masalah besar & mengapa penting.
+2. Perkuat dengan **Lapis 2** (bukti terverifikasi) → *"Kami tidak hanya membaca laporan — kami query
+   langsung sampel dataset resmi SimkopDes yang panitia berikan: 76,3% anggota tanpa akun digital."*
+   Ini mengenai **Relevansi (25%)** DAN **Kualitas Teknologi (15%)** sekaligus — bukti kerja teknis nyata.
+3. Siapkan jawaban live defense: dari mana data ini (shared PostgreSQL panitia, 10 Juli 2026, 1.026
+   koperasi), dan akui keterbatasannya (sampel, bukan sensus nasional) — kejujuran ini justru menambah
+   kredibilitas, bukan mengurangi.
+
+### 2.3 Strategi Pilot Regional (kerucutkan CERITA DEMO, bukan target pasar produk)
+
+Untuk kriteria **Kemudahan Implementasi (15%)**, kerucutkan narasi demo ke **1 wilayah/kabupaten
+spesifik** dari dataset — pasar/skala produk EdigDaya tetap **nasional** (§4), hanya *studi kasus demo*
+yang dipersempit agar konkret:
+
+```sql
+SELECT rw.provinsi, rw.kab_kota,
+       COUNT(DISTINCT rkw.koperasi_ref) AS jumlah_koperasi,
+       COUNT(DISTINCT ak.anggota_ref)   AS jumlah_anggota
+FROM referensi_koperasi_wilayah rkw
+JOIN referensi_wilayah rw ON rkw.kode_wilayah = rw.kode_wilayah
+LEFT JOIN anggota_koperasi ak ON ak.koperasi_ref = rkw.koperasi_ref
+GROUP BY rw.provinsi, rw.kab_kota
+ORDER BY jumlah_koperasi DESC
+LIMIT 10;
+```
+
+Pilih 1 kabupaten/kota dengan data terpadat → jadikan studi kasus utama di pitch: *"Contoh nyata di
+[kab/kota X]: dari Y koperasi, Z% anggota tanpa akun digital..."* — konkret, dapat diverifikasi, dan
+selaras arahan "pilot 1–2 koperasi percontohan" sebelum skala nasional (§4 roadmap).
+
+### 2.4 Tiga hambatan lapangan (problem statement submission)
 1. **Pendaftaran anggota manual & eksklusif** — menyekat masyarakat kecil yang minim akses informasi.
 2. **Warga berlahan potensial minim pengetahuan teknis & literasi digital** — tanpa fasilitator
    lapangan, registrasi sulit dan komoditas gagal dipetakan.
 3. **Tata kelola logistik & keuangan belum transparan** — memicu mosi tidak percaya dari anggota.
 
-### 2.3 Riset pendukung (konteks KDMP lebih luas — untuk memperkuat argumen di sesi tanya-jawab/live defense)
+### 2.5 Riset pendukung (konteks KDMP lebih luas — untuk memperkuat argumen di sesi tanya-jawab/live defense)
 - Eksekusi program masih jauh dari target: ~80.015 KDMP terbentuk (pertengahan 2025) namun implementasi
   operasional di lapangan berjalan bertahap dan tidak merata antar desa — konsisten dengan temuan
   submission bahwa **hanya 71,5% koperasi nasional yang menggelar RAT** dan **~10% memanfaatkan
@@ -286,6 +351,11 @@ skema yang kompatibel, **bukan sistem terpisah**. Ini yang membuat solusi "nyamb
 `32********01`, koordinat dibulatkan → sudah taat privasi/UU PDP). Semua tabel tersambung lewat kunci
 **`koperasi_ref`** (mis. `KOP-539EF09CDAAD`) ke `profil_koperasi`.
 
+**✅ Terverifikasi live (10 Juli 2026):** tim berhasil konek ke **Shared PostgreSQL Database** panitia
+(`hackathon_2026`, kredensial via email panitia — lihat §0). Hasil `\dt` di server = **100% identik**
+dengan 27 tabel di metadata Excel ini, jadi seluruh dokumentasi field/tipe/deskripsi di bawah **bisa
+dipercaya penuh** sebagai acuan skema. Hasil query nyata (angka konkret) ada di **§2.2**.
+
 **Buat apa (kenapa penting):**
 1. **Bangun MVP di atas data nyata, bukan dummy** → langsung menaikkan Relevansi (25%), Dampak (20%),
    Kemudahan Implementasi (15%). Inilah "solusi nyata" yang dicari juri.
@@ -309,10 +379,9 @@ skema yang kompatibel, **bukan sistem terpisah**. Ini yang membuat solusi "nyamb
    belum punya akun digital** → itulah *gap keterlibatan* yang EdigDaya tutup lewat WhatsApp.
 2. **`rat_koperasi.jumlah_peserta_rat`** yang rendah membuktikan partisipasi RAT lemah → dijawab e-RAT via WA.
 
-Tunjukkan **angka aktual dari dataset** saat sprint (bukan asumsi). Rancang tabel EdigDaya memakai nama &
-relasi yang sama (`koperasi_ref`, `anggota_ref`, dst) supaya klaim "SimkopDes-compatible" kredibel di README.
-Catatan: file *metadata* (skema) sudah di tangan; **berkas data tabel (CSV/dump) dikonfirmasi via folder
-"Aset Database"** — cek berkala, siapkan sampel dummy bila belum tersedia saat sprint.
+Angka aktual dari dataset sudah tersedia di **§2.2** (76,3% tanpa akun digital, 10,7% status Requested,
+~35% partisipasi RAT). Rancang tabel EdigDaya memakai nama & relasi yang sama (`koperasi_ref`,
+`anggota_ref`, dst) dengan prefix **`edigdev_`**, supaya klaim "SimkopDes-compatible" kredibel di README.
 
 ---
 
@@ -331,15 +400,16 @@ Catatan: file *metadata* (skema) sudah di tangan; **berkas data tabel (CSV/dump)
 
 ## 8. Catatan Akurasi & Hal yang Perlu Diverifikasi Manual
 
-- **Link "Database" SimkopDes** (§0) — sudah diverifikasi: folder Google Drive "Aset Database" milik
-  panitia, **masih kosong** per 7 Juli 2026. Jangan berasumsi akan terisi tepat waktu; siapkan data
-  dummy sendiri sebagai fallback demo. Endpoint `/pers/*` lain (`dashboard`, `rat`, `transaksi/bisnis`,
-  `ews/kesehatan-keuangan`, `kelembagaan`) di domain `simkopdes.go.id` belum sempat dicek satu-satu —
-  domain ini diblokir dari lingkungan riset otomatis (bukan dari server aslinya), jadi tim tetap perlu
-  membukanya langsung dari browser untuk memastikan bentuknya (dashboard berlogin vs dataset unduh).
-- Angka penyusutan koperasi (209.488→130.119) dan RAT 71,5% mengikuti **problem statement submission
-  resmi** — sumber utamanya tidak dicantumkan di file MVP concept; siapkan referensi (mis. data
-  Kemenkop/BPS) untuk sesi live defense jika juri menanyakan sumber data.
+- **Folder Google Drive "Aset Database"** (link TOR §0) — per 7 Juli 2026 masih kosong; ini **kanal
+  terpisah** dari Shared Database yang sudah aktif (§0/§2.2/§6C). Endpoint `/pers/*` di `simkopdes.go.id`
+  belum sempat dicek satu-satu (diblokir dari lingkungan riset otomatis) — tidak krusial lagi karena
+  akses data utama sudah lewat Shared Database.
+- Angka penyusutan koperasi (209.488→130.119) dan RAT 71,5% (§2.1, Lapis 1) mengikuti **problem
+  statement submission resmi** — sumber utamanya tidak dicantumkan di file MVP concept; siapkan
+  referensi (mis. data Kemenkop/BPS) untuk live defense jika juri menanyakan sumber. Angka §2.2 (Lapis 2)
+  lebih aman karena bisa ditunjukkan query-nya langsung.
+- **Sampel vs. nasional (§2.2):** selalu bedakan angka Lapis 1 (klaim nasional, dari submission) vs.
+  Lapis 2 (sampel 1.026 koperasi, dari database) — jangan mencampur keduanya seolah satu sumber.
 - Elemen riset tambahan dari eksplorasi awal tim (mis. proyeksi risiko gagal bayar kredit KDMP secara
   nasional) bersifat **kontekstual/roadmap** — jangan dicampur sebagai klaim inti EdigDaya tanpa
   menyebutkan levelnya (makro-nasional vs. fitur produk).
@@ -348,15 +418,14 @@ Catatan: file *metadata* (skema) sudah di tangan; **berkas data tabel (CSV/dump)
 
 ## 9. Langkah Berikut untuk Tim
 
-1. **URGENT — di luar lingkup teknis:** konfirmasi keikutsertaan TOP 100 + tanda tangan Consent Form +
-   kirim KTP seluruh anggota, **paling lambat 7 Juli 2026, 23.59 WIB**.
-2. Verifikasi manual link database SimkopDes (§0/§8) dari browser tim — update dokumen ini begitu
-   bentuknya jelas.
-3. Kunci scope ke **1 alur demo** (§3); pilar lain cukup mockup di deck/roadmap.
-4. Bagi tugas: (a) form registrasi + verifikasi foto, (b) dashboard transparansi + cetak laporan fisik,
-   (c) mesin rekomendasi AI (1 use-case saja), (d) deck PDF 10–12 slide, (e) README + persiapan live
-   defense (siapa menjawab pertanyaan sumber data & disclosure AI).
-5. Siapkan **data dummy 2–3 anggota** dengan lahan/komoditas berbeda agar demo dashboard & rekomendasi
-   terlihat meyakinkan.
-6. Latih presentasi (bobot 5%, tapi live defense memengaruhi penilaian orisinalitas) — tim harus bisa
-   menjelaskan setiap bagian ide tanpa bergantung catatan.
+1. ✅ **Selesai:** konfirmasi keikutsertaan TOP 100, Consent Form, KTP (diterima panitia 7 Juli 2026).
+2. ✅ **Selesai:** akses Shared Database terverifikasi, skema tercocokkan dengan metadata (§2.2/§6C).
+3. Jalankan query **pilot regional** (§2.3) → pilih 1 kab/kota untuk studi kasus demo.
+4. Kunci scope ke **1 alur demo** (§3); pilar lain cukup mockup di deck/roadmap.
+5. Bagi tugas: (a) form registrasi + verifikasi foto, (b) dashboard transparansi (pakai angka §2.2) +
+   cetak laporan fisik, (c) mesin rekomendasi AI (1 use-case saja), (d) deck PDF 10–12 slide,
+   (e) README + persiapan live defense (siapa menjawab soal provenance data & disclosure AI).
+6. **Setup `.env` + `.gitignore`** sebelum menyentuh kode — kredensial Shared DB **tidak boleh** masuk
+   commit (repo publik). Tabel aplikasi sendiri wajib prefix `edigdev_`.
+7. Latih presentasi (bobot 5%, tapi live defense memengaruhi penilaian orisinalitas) — tim harus bisa
+   menjelaskan setiap bagian ide, termasuk dari mana angka §2.2 berasal, tanpa bergantung catatan.
