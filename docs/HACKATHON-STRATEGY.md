@@ -401,6 +401,32 @@ Angka aktual dari dataset sudah tersedia di **§2.2** (76,3% tanpa akun digital,
 
 ---
 
+## 6D. Arsitektur 1 Database (bukan 2) — Menyatukan Shared DB Panitia dengan DB Tim Sendiri
+
+**Masalah:** bot WA yang sudah dibangun tim connect ke database sendiri (Supabase), sedangkan MVP
+webapp connect ke Shared Database panitia — jadi ada **2 database terpisah**. Ini menambah kompleksitas
+& risiko (bergantung 2 sumber, salah satu bisa lag/down saat demo).
+
+**Solusi — satu kali salin dataset ke database sendiri:**
+1. **Boleh nggak menyalin data panitia?** **Boleh, dan dianjurkan.** Kredensial Shared Database memang
+   dibagikan panitia supaya peserta **memakai** datanya untuk membangun solusi — bukan sekadar melihat.
+   TOR tidak melarang menyalin data ke tempat lain untuk keperluan pengembangan solusi. Menyimpan
+   salinan sendiri untuk demo yang stabil bahkan sejalan dengan riset tim sendiri (*"Bedah Tema 3"*):
+   *"prepare demo environment terpisah (static data, bukan live campaign data)"*.
+2. **Caranya:** jalankan `npm run db:copy-dataset` (`webapp/scripts/copy-dataset.mjs`) — script ini
+   membaca skema+data 27 tabel dari Shared Database panitia (`SRC_DB_*`), lalu membuat salinannya di
+   database milik tim sendiri (`DB_*`, mis. Supabase yang sudah dipakai bot WA). Sekali jalan, cukup.
+3. **Setelah itu:** seluruh aplikasi (webapp + bot WA) **hanya konek ke 1 database** — milik tim
+   sendiri. `SRC_DB_*` (kredensial panitia) tidak dipakai lagi, boleh dihapus dari `.env`.
+4. **Batasan yang tetap berlaku:** dataset yang disalin adalah **sampel per 10 Juli 2026** — tidak
+   otomatis ter-update jika panitia mengubah data sumber. Untuk hackathon 24–36 jam ini bukan masalah;
+   sebutkan saja "snapshot per 10 Juli" jika juri bertanya soal kesegaran data.
+
+Dengan ini, **hanya ada 1 database** untuk didemokan — lebih stabil, lebih sederhana untuk dijelaskan
+saat live defense, dan tidak bergantung pada Shared Database yang dipakai bersama ~100 tim lain.
+
+---
+
 ## 7. Kepatuhan Deliverables (checklist sebelum submit ke portal SIMKOPDES)
 
 - [x] **Scaffold MVP** (`webapp/`) — Next.js 14 + PostgreSQL, alur Registrasi → Dashboard → e-RAT →

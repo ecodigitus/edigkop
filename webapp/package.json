@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:init": "node --env-file=.env scripts/init-schema.mjs"
+    "db:init": "node --env-file=.env scripts/init-schema.mjs",
+    "db:copy-dataset": "node --env-file=.env scripts/copy-dataset.mjs"
   },
   "dependencies": {
     "next": "14.2.35",

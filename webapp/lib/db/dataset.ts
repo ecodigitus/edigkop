@@ -1,10 +1,19 @@
 /**
- * Query READ-ONLY ke 27 tabel dataset resmi SimkopDes (Shared Database hackathon).
- * JANGAN pernah INSERT/UPDATE/DELETE di sini — database dipakai bersama ~100 tim.
- * Skema tabel-tabel ini identik dgn metadata_database_hackathon_final.xlsx (diverifikasi 10 Juli 2026).
+ * Query ke 27 tabel dataset resmi SimkopDes. Skema identik dgn
+ * metadata_database_hackathon_final.xlsx (diverifikasi 10 Juli 2026).
+ *
+ * ARSITEKTUR: fungsi di sini terhubung ke DB_* di .env — idealnya itu adalah
+ * database MILIK TIM SENDIRI (mis. Supabase yang sudah dipakai bot WA), bukan
+ * Shared Database panitia langsung. Jalankan `npm run db:copy-dataset` sekali
+ * di awal sprint untuk menyalin 27 tabel ini dari Shared Database panitia ke
+ * database sendiri — setelah itu boleh READ/WRITE bebas karena ini sudah salinan
+ * milik tim (bukan lagi database yang dipakai bersama ~100 tim lain).
+ *
+ * Jika DB_* MASIH menunjuk langsung ke Shared Database panitia (belum disalin):
+ * JANGAN INSERT/UPDATE/DELETE ke 27 tabel ini — dipakai bersama tim lain.
  *
  * MODE PREVIEW: set MOCK_DATA=true di .env untuk melihat UI dashboard tanpa koneksi database
- * nyata — berguna untuk latihan demo/pitch, atau jika Shared Database bermasalah saat hari-H.
+ * nyata — berguna untuk latihan demo/pitch, atau jika database bermasalah saat hari-H.
  * Angka mock di bawah = angka NYATA hasil query tim (10 Juli 2026); nama wilayah di
  * getWilayahTerpadat() adalah CONTOH placeholder, bukan hasil query asli.
  */

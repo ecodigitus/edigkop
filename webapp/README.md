@@ -6,7 +6,10 @@ Tim **EdigDev** — tema **Keterlibatan Masyarakat dalam Berkoperasi**.
 Dokumen strategi lengkap: [`../docs/HACKATHON-STRATEGY.md`](../docs/HACKATHON-STRATEGY.md).
 Pitch deck: [`../deck/index.html`](../deck/index.html).
 
-## Cara menjalankan
+## Cara menjalankan (arsitektur 1 database)
+
+Rekomendasi: **satu database saja** untuk semuanya (webapp + bot WA tim) — database **milik tim
+sendiri** (mis. Supabase yang sudah dipakai bot WA), bukan Shared Database panitia langsung.
 
 1. **Install dependencies**
    ```bash
@@ -18,16 +21,25 @@ Pitch deck: [`../deck/index.html`](../deck/index.html).
    ```bash
    cp .env.example .env
    ```
-   Isi `.env` dengan kredensial dari **email panitia** ("Google Cloud Credit dan Shared Database
-   Server") atau grup WhatsApp resmi peserta. **Jangan pernah commit file `.env`** — repo ini publik.
+   - `DB_*` → isi dengan **database milik tim sendiri** (Supabase yang sudah dipakai bot WA).
+   - `SRC_DB_*` → isi sementara dari **email panitia** ("Google Cloud Credit dan Shared Database
+     Server", 10 Juli 2026) atau grup WhatsApp resmi peserta — hanya untuk migrasi satu kali (langkah 3).
+   - **Jangan pernah commit file `.env`** — repo ini publik.
 
-3. **Buat skema tabel aplikasi** (sekali saja, tabel prefix `edigdev_` sesuai aturan panitia agar
-   tidak tabrakan dengan tim lain di Shared Database)
+3. **Salin dataset resmi SimkopDes ke database sendiri** (sekali saja, di awal sprint)
+   ```bash
+   npm run db:copy-dataset
+   ```
+   Ini menyalin 27 tabel dari Shared Database panitia (`SRC_DB_*`) ke database tim (`DB_*`). Setelah
+   ini, `SRC_DB_*` tidak dipakai lagi — boleh dihapus dari `.env`. Kenapa boleh & dianjurkan: lihat
+   `docs/HACKATHON-STRATEGY.md` §6C.
+
+4. **Buat skema tabel aplikasi sendiri** (registrasi, e-RAT, dll., prefix `edigdev_` untuk kerapian)
    ```bash
    npm run db:init
    ```
 
-4. **Jalankan**
+5. **Jalankan**
    ```bash
    npm run dev
    ```
@@ -37,26 +49,27 @@ Pitch deck: [`../deck/index.html`](../deck/index.html).
 
 ```
 [Warga/Anggota]
-   │ WhatsApp (menu ketik-angka) atau form web
+   │ WhatsApp (bot yang sudah dibangun tim) atau form web
    ▼
 [Next.js App Router]
-   ├─ app/registrasi   → Registrasi terpandu (petugas lapangan)
-   ├─ app/dashboard     → Dashboard Transparansi (baca 27 tabel dataset resmi SimkopDes)
-   ├─ app/erat          → e-RAT & voting (sah, PP 7/2021 Ps.8)
-   ├─ app/laporan/[id]  → Laporan fisik cetak (papan info desa)
-   └─ app/api/whatsapp  → Webhook menu WA (cermin bot yang sudah dibangun tim)
+   ├─ app/registrasi        → Registrasi terpandu (petugas lapangan)
+   ├─ app/koperasi/[ref]    → Dashboard Koperasi (pengurus & anggota daerah)
+   ├─ app/dashboard         → Dashboard Nasional (bukti data agregat)
+   ├─ app/erat              → e-RAT & voting (sah, PP 7/2021 Ps.8)
+   ├─ app/laporan/[id]      → Laporan fisik cetak (papan info desa)
+   └─ app/api/whatsapp      → Webhook menu WA (cermin bot yang sudah dibangun tim)
    ▼
 [lib/db]
-   ├─ dataset.ts  → READ-ONLY ke 27 tabel Shared Database panitia (anggota_koperasi, rat_koperasi, dst)
-   └─ edigdev.ts  → CRUD ke tabel milik EdigDaya sendiri (prefix edigdev_*)
+   ├─ dataset.ts  → 27 tabel dataset resmi SimkopDes (anggota_koperasi, rat_koperasi, dst)
+   └─ edigdev.ts  → tabel milik aplikasi EdigDaya sendiri (prefix edigdev_*)
    ▼
-[PostgreSQL — Shared Database hackathon]
+[PostgreSQL — SATU database milik tim, mis. Supabase yang sudah dipakai bot WA]
 ```
 
-**Kenapa satu database, dua lapisan akses:** 27 tabel dataset panitia dipakai bersama ~100 tim dan
-**hanya boleh dibaca (SELECT)**. Semua data yang ditulis aplikasi (registrasi, vote e-RAT, poin,
-sesi WhatsApp) masuk ke tabel baru berprefix **`edigdev_`** di database yang sama — sesuai instruksi
-panitia. Skema lengkap: [`lib/db/schema.sql`](lib/db/schema.sql).
+**Satu database untuk semua:** setelah `npm run db:copy-dataset` dijalankan, 27 tabel dataset resmi
+dan tabel `edigdev_*` berada di **database yang sama** yang sudah dipakai bot WA tim — tidak ada lagi
+arsitektur 2 database terpisah. Skema tabel aplikasi: [`lib/db/schema.sql`](lib/db/schema.sql).
+Script migrasi: [`scripts/copy-dataset.mjs`](scripts/copy-dataset.mjs).
 
 ## Keamanan & privasi (OWASP / UU PDP)
 
@@ -84,5 +97,7 @@ fallback rule-based bila `ANTHROPIC_API_KEY` tidak diisi.
 
 ## Data yang dipakai
 
-Sampel dataset resmi SimkopDes (**1.026 koperasi, 74.269 anggota**) dari Shared Database panitia —
-bukan sensus nasional penuh. Lihat `docs/HACKATHON-STRATEGY.md` §2.2 untuk temuan data & provenance.
+Sampel dataset resmi SimkopDes (**1.026 koperasi, 74.269 anggota**) — bukan sensus nasional penuh.
+Direkomendasikan disalin ke database sendiri (`npm run db:copy-dataset`) agar demo tidak bergantung
+pada Shared Database yang dipakai bersama ~100 tim lain. Lihat `docs/HACKATHON-STRATEGY.md` §2.2
+untuk temuan data & provenance, dan §6C untuk penjelasan arsitektur 1-database.
