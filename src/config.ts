@@ -50,6 +50,16 @@ export const config = {
     apiUrl: process.env.SIMKOPDES_API_URL?.trim() ?? '',
     apiKey: process.env.SIMKOPDES_API_KEY?.trim() ?? '',
   },
+  hackathonDb: {
+    // DB global panitia hackathon — dipakai HANYA untuk SELECT (read-only).
+    // KOSONG = menu "Koperasi Global" nonaktif (fallback aman). Password TIDAK
+    // di-trim (dihormati apa adanya). Tak pernah di-hardcode (OWASP A05).
+    host: process.env.DB_HOST?.trim() ?? '',
+    port: num('DB_PORT', 5432),
+    database: process.env.DB_DATABASE?.trim() ?? '',
+    username: process.env.DB_USERNAME?.trim() ?? '',
+    password: process.env.DB_PASSWORD ?? '',
+  },
   wa: {
     authDir: process.env.WA_AUTH_DIR?.trim() || 'auth',
     handleGroups: (process.env.WA_HANDLE_GROUPS ?? 'false').toLowerCase() === 'true',

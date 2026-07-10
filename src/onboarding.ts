@@ -7,7 +7,7 @@
  */
 import { koperasi } from './business';
 import { rupiah } from './format';
-import { prospectWelcome } from './welcome';
+import { prospectWelcome, startNudge } from './welcome';
 
 // Konstanta ilustrasi (asumsi, bukan angka resmi) untuk pembanding "hemat".
 const KOPERASI_RATE = 0.01; // 1%/bln — selaras koperasi.pinjaman.jasa
@@ -99,9 +99,10 @@ export function handleProspect(jid: string, text: string): string {
     return simResult(amount);
   }
 
-  // Pintasan angka dari welcome card (1 = penjelasan, 2 = Menu).
-  // Opsi 3 (ngobrol AI) & 4 (aktivasi) ditangani di router sebelum sampai sini.
-  const welcomeShortcut: Record<string, string> = { '1': 'apa itu koperasi', '2': 'menu' };
+  // Pintasan angka dari welcome card (2 = penjelasan, 3 = Menu).
+  // Opsi 1 (periksa aktivasi), 4 (ngobrol AI) & 5 (aktivasi) ditangani di router
+  // sebelum sampai sini.
+  const welcomeShortcut: Record<string, string> = { '2': 'apa itu koperasi', '3': 'menu' };
   const t = welcomeShortcut[raw] ?? raw;
 
   // 2) Menu TERKUNCI sampai user aktivasi akun dulu
@@ -109,7 +110,7 @@ export function handleProspect(jid: string, text: string): string {
     return (
       `🔒 Aduh, kamu belum aktivasi akun nih 😅\n\n` +
       `Daftar dulu yuk biar bisa akses semua layanan anggota (simpanan, SHU, pinjaman, voting, dll).\n` +
-      `👉 Ketik *4* atau *aktivasi* untuk mulai — cuma beberapa langkah dari chat ini. 🙌`
+      `👉 Sudah terdaftar di koperasi? Ketik *periksa aktivasi*. Belum? Ketik *5* atau *aktivasi* buat daftar baru. 🙌`
     );
   }
 
@@ -134,6 +135,7 @@ export function handleProspect(jid: string, text: string): string {
     return video();
   }
 
-  // 6) Default -> tampilkan kembali pilihan welcome
-  return prospectWelcome();
+  // 6) Default -> nudge singkat "ketik mulai" (biar user baru gak bingung, gak
+  //    langsung dibanjiri seluruh kartu welcome). Kartu penuh muncul saat "mulai".
+  return startNudge();
 }
